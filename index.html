@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Voice @ The Pennington School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #c0392b;
+    --red-dark: #962d22;
+    --red-light: #f9eeec;
+    --bg: #faf6f1;
+    --bg-card: #ffffff;
+    --bg-rule: #e8ddd0;
+    --text: #2c2c2c;
+    --text-muted: #7a6e64;
+    --text-light: #a99e94;
+    --border: #e0d6cb;
+    --radius: 10px;
+    --font-head: 'Playfair Display', Georgia, serif;
+    --font-body: 'Source Serif 4', Georgia, serif;
+    --font-ui: 'DM Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  a { color: var(--red); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ── Masthead ── */
+  .masthead {
+    background: var(--bg-card);
+    border-bottom: 3px solid var(--red);
+    padding: 24px 0 18px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(44,44,44,.07);
+  }
+  .masthead-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .masthead-logo { width: 60px; height: 60px; flex-shrink: 0; }
+  .masthead-title {
+    font-family: var(--font-head);
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    font-weight: 900;
+    color: var(--red);
+    letter-spacing: -.5px;
+    line-height: 1;
+  }
+  .masthead-sub {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .masthead-meta {
+    font-family: var(--font-ui);
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 6px;
+  }
+
+  /* ── Layout ── */
+  .page { max-width: 900px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  /* ── Quick Links ── */
+  .quick-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+  .quick-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--text);
+    transition: border-color .15s, background .15s;
+  }
+  .quick-link:hover {
+    background: var(--red-light);
+    border-color: var(--red);
+    color: var(--red);
+    text-decoration: none;
+  }
+
+  /* ── Alert Banner ── */
+  .alert-banner {
+    background: var(--red);
+    color: white;
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── Section Label ── */
+  .section-label {
+    font-family: var(--font-ui);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── Deadlines ── */
+  .deadlines-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .deadline-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .deadline-date {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--red);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 4px;
+  }
+  .deadline-title {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  /* ── Accordion ── */
+  .accordion { margin-bottom: 36px; }
+  .accordion-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .accordion-trigger {
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    gap: 12px;
+    text-align: left;
+  }
+  .accordion-trigger:hover { background: var(--bg); }
+  .accordion-trigger-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+  .accordion-badge {
+    background: var(--red-light);
+    color: var(--red);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .accordion-title {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .accordion-preview {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .accordion-arrow {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bg-rule);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform .25s, background .15s;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .accordion-item.open .accordion-arrow {
+    transform: rotate(180deg);
+    background: var(--red-light);
+    color: var(--red);
+  }
+  .accordion-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+  .accordion-body-inner {
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .accordion-body-inner p { margin-top: 12px; }
+  .accordion-body-inner p:first-child { margin-top: 14px; }
+  .accordion-body-inner ul { padding-left: 20px; margin-top: 8px; }
+  .accordion-body-inner li { margin-bottom: 6px; }
+  .accordion-body-inner .detail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--red);
+    margin-top: 10px;
+    font-weight: 500;
+  }
+
+  /* ── Misc ── */
+  .divider { height: 1px; background: var(--border); margin: 36px 0; }
+  .loading {
+    text-align: center;
+    padding: 60px;
+    font-family: var(--font-ui);
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  .footer {
+    border-top: 2px solid var(--border);
+    padding: 28px 0 0;
+    text-align: center;
+    font-family: var(--font-ui);
+    font-size: 12px;
+    color: var(--text-light);
+  }
+  .footer a { color: var(--text-muted); }
+
+  @media (max-width: 600px) {
+    .masthead-inner { flex-direction: column; text-align: center; }
+    .deadlines-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <svg class="masthead-logo" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="30" cy="30" r="29" fill="#c0392b" stroke="#962d22" stroke-width="1.5"/>
+      <text x="30" y="42" text-anchor="middle" font-family="'Playfair Display',serif" font-size="32" font-weight="900" fill="white">P</text>
+    </svg>
+    <div>
+      <div class="masthead-title">The Voice</div>
+      <div class="masthead-sub">The Pennington School</div>
+      <div class="masthead-meta" id="issue-meta">Loading…</div>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  <div id="app"><div class="loading">Loading The Voice…</div></div>
+
+  <footer class="footer" style="margin-top:48px">
+    <p>The Voice · The Pennington School</p>
+    <p style="margin-top:6px">Day students staying home sick: have a parent call <strong>609-737-1838</strong> or email <a href="mailto:mary.heaton@pennington.org">Mrs. Heaton</a>.</p>
+    <p style="margin-top:6px"><a href="admin.html">Admin login</a></p>
+  </footer>
+</main>
+
+<script>
+  // ── Config ────────────────────────────────────────────────────
+  const SUPABASE_URL      = 'https://fcrghpinecvnxfcgfbbx.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjcmdocGluZWN2bnhmY2dmYmJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNzE2MjAsImV4cCI6MjA5Mzg0NzYyMH0.yRKPTYGSMet0e0HBKatI7cQ1JkdObt386b7uz3MRM_I';
+  // ─────────────────────────────────────────────────────────────
+
+  // ── Auth-link redirect (must run before anything else) ────────
+  const AUTH_TOKENS = ['recovery_token', 'invite_token', 'confirmation_token'];
+  if (AUTH_TOKENS.some(t => window.location.hash.includes(t))) {
+    window.location.replace('password.html' + window.location.hash);
+    // Stop all further execution while the browser navigates away
+    throw new Error('Redirecting to password reset page…');
+  }
+  // ─────────────────────────────────────────────────────────────
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function esc(s) {
+    if (!s) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  async function api(path) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    });
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    return res.json();
+  }
+
+  // ── Accordion ─────────────────────────────────────────────────
+  function initAccordions() {
+    document.querySelectorAll('.accordion-trigger').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.accordion-item');
+        const body = item.querySelector('.accordion-body');
+        const isOpen = item.classList.contains('open');
+
+        // Close all siblings
+        item.closest('.accordion').querySelectorAll('.accordion-item').forEach(s => {
+          s.classList.remove('open');
+          s.querySelector('.accordion-trigger').setAttribute('aria-expanded', 'false');
+          s.querySelector('.accordion-body').style.maxHeight = '0';
+        });
+
+        // Open this one if it was closed
+        if (!isOpen) {
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+          body.style.maxHeight = body.scrollHeight + 'px';
+        }
+      });
+    });
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  function buildQuickLinks(links) {
+    if (!links.length) return '';
+    const items = links.map(l =>
+      `<a class="quick-link" href="${esc(l.url)}" target="_blank">
+        ${l.emoji ? `<span>${esc(l.emoji)}</span>` : ''}
+        ${esc(l.label)}
+      </a>`
+    ).join('');
+    return `<nav class="quick-links">${items}</nav>`;
+  }
+
+  function buildAlert(alert) {
+    if (!alert?.enabled) return '';
+    return `<div class="alert-banner" role="alert"><span>📢</span><span>${esc(alert.text)}</span></div>`;
+  }
+
+  function buildDeadlines(deadlines) {
+    if (!deadlines.length) return '';
+    const cards = deadlines.map(d =>
+      `<div class="deadline-card">
+        <div class="deadline-date">${esc(d.date_label)}</div>
+        <div class="deadline-title">${esc(d.title)}</div>
+      </div>`
+    ).join('');
+    return `<div class="section-label">Upcoming deadlines</div><div class="deadlines-grid">${cards}</div>`;
+  }
+
+  function buildSections(sections, stories) {
+    return sections.map((sec, i) => {
+      const secStories = stories.filter(s => s.section_id === sec.id);
+      if (!secStories.length) return '';
+
+      const items = secStories.map(s => `
+        <div class="accordion-item">
+          <button class="accordion-trigger" aria-expanded="false">
+            <div class="accordion-trigger-left">
+              <div>
+                <div class="accordion-title">${esc(s.title)}</div>
+                ${s.preview ? `<div class="accordion-preview">${esc(s.preview)}</div>` : ''}
+              </div>
+            </div>
+            ${s.badge ? `<span class="accordion-badge">${esc(s.badge)}</span>` : ''}
+            <div class="accordion-arrow">▼</div>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">${s.body_html}</div>
+          </div>
+        </div>`
+      ).join('');
+
+      return `
+        ${i > 0 ? '<div class="divider"></div>' : ''}
+        <div class="section-label">${esc(sec.name)}</div>
+        <div class="accordion" id="acc-${sec.id}">${items}</div>`;
+    }).join('');
+  }
+
+  // ── Main ──────────────────────────────────────────────────────
+  async function load() {
+    const [issues, links, alerts, deadlines, sections, stories] = await Promise.all([
+      api('issue?select=*&order=id.desc&limit=1'),
+      api('quick_links?select=*&order=sort_order'),
+      api('alert?select=*&limit=1'),
+      api('deadlines?select=*&order=sort_order'),
+      api('sections?select=*&order=sort_order'),
+      api('stories?select=*&order=sort_order'),
+    ]);
+
+    // Issue meta
+    const iss = issues[0] || {};
+    document.getElementById('issue-meta').textContent =
+      [iss.issue_date, iss.day_label, iss.rotation_day].filter(Boolean).join(' · ');
+
+    // Render page
+    document.getElementById('app').innerHTML = [
+      buildQuickLinks(links),
+      buildAlert(alerts[0]),
+      buildDeadlines(deadlines),
+      buildSections(sections, stories),
+    ].join('');
+
+    initAccordions();
+  }
+
+  load().catch(err => {
+    console.error(err);
+    document.getElementById('app').innerHTML =
+      `<div class="loading">Could not load content. Please try again later.</div>`;
+  });
+</script>
+</body>
+</html>
