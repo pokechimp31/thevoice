@@ -314,7 +314,7 @@
   <div class="poll-header" onclick="togglePoll()">
     <div class="poll-header-left">
       <span>📊</span>
-      <span class="poll-header-label">Poll</span>
+      <span class="poll-header-label">Poll of the Day</span>
     </div>
     <button class="poll-toggle-btn" id="poll-chevron" aria-label="Collapse poll">▼</button>
   </div>
@@ -325,9 +325,10 @@
 
 <!-- Collapsed tab shown when poll is minimized -->
 <button class="poll-tab" id="poll-tab" onclick="expandPoll()" aria-label="Open poll">
-  Poll
+  📊 Poll of the Day
 </button>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
 <script>
   // ── Auth redirect ─────────────────────────────────────────────
   const AUTH_TOKENS = ['recovery_token', 'invite_token', 'confirmation_token'];
@@ -637,7 +638,7 @@
             </div>
           </button>
           <div class="accordion-body">
-            <div class="accordion-body-inner">${s.body_html||''}</div>
+            <div class="accordion-body-inner">${DOMPurify.sanitize(s.body_html||'')}</div>
           </div>
         </div>`).join('');
       return `${i>0?'<div class="divider"></div>':''}
