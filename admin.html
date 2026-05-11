@@ -357,7 +357,11 @@
   // ── DB ────────────────────────────────────────────────────────
   async function dbUpsert(table, rows) {
     if (!rows.length) return;
-    const { error } = await sb.from(table).upsert(rows);
+    const cleaned = rows.map(r => {
+      if (!r.id) { const { id, ...rest } = r; return rest; }
+      return r;
+    });
+    const { error } = await sb.from(table).upsert(cleaned);
     if (error) throw error;
   }
   async function dbDelete(table, id) {
