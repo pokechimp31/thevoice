@@ -196,6 +196,22 @@
   .poll-voted-label { font-family: var(--font-ui); font-size: 11px; color: var(--text-light); text-align: center; margin-top: 10px; }
   .poll-total { font-family: var(--font-ui); font-size: 11px; color: var(--text-light); text-align: center; margin-top: 6px; }
 
+  /* Change answer button */
+  .poll-change-btn {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-family: var(--font-ui);
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .poll-change-btn:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
+
   /* Collapsed tab */
   .poll-tab {
     position: fixed;
@@ -391,8 +407,15 @@
   }
 
   // ── Poll ──────────────────────────────────────────────────────
-  let _pollId = null;
+  let _pollId      = null;
+  let _pollVersion = null;  // tracks vote_version so admin clears invalidate local votes
+  let _pollOptions = [];
   let _pollCollapsed = false;
+
+  // localStorage key includes both poll id AND version so a vote-clear forces re-vote
+  function pollStorageKey() {
+    return `poll_voted_${_pollId}_v${_pollVersion}`;
+  }
 
   function togglePoll() {
     _pollCollapsed = !_pollCollapsed;
@@ -423,18 +446,20 @@
       const polls = await api('poll?select=*&enabled=eq.true&order=id.desc&limit=1');
       const poll  = polls[0];
       if (!poll || !poll.enabled) { widget.style.display = 'none'; return; }
-      _pollId = poll.id;
 
-      const options = poll.options || [];
-      const votes   = await api(`poll_votes?select=option_index&poll_id=eq.${poll.id}`);
-      const counts  = options.map((_, i) => votes.filter(v => v.option_index === i).length);
-      const total   = counts.reduce((a, b) => a + b, 0);
+      _pollId      = poll.id;
+      _pollVersion = poll.vote_version ?? 0;
+      _pollOptions = poll.options || [];
 
-      const hasVoted = localStorage.getItem(`poll_voted_${poll.id}`);
+      const votes  = await api(`poll_votes?select=option_index&poll_id=eq.${poll.id}`);
+      const counts = _pollOptions.map((_, i) => votes.filter(v => v.option_index === i).length);
+      const total  = counts.reduce((a, b) => a + b, 0);
+
+      const hasVoted = localStorage.getItem(pollStorageKey());
       if (hasVoted !== null) {
-        renderResults(body, options, counts, total, true);
+        renderResults(body, _pollOptions, counts, total, false);
       } else {
-        renderVoting(body, poll.question, options);
+        renderVoting(body, poll.question, _pollOptions);
       }
     } catch(e) {
       body.innerHTML = `<p style="font-size:12px;color:#a99e94;text-align:center;padding:8px">Poll unavailable.</p>`;
@@ -454,8 +479,9 @@
 
   async function castVote(optionIndex) {
     if (!_pollId) return;
-    // Optimistic: mark voted immediately
-    localStorage.setItem(`poll_voted_${_pollId}`, optionIndex);
+
+    // Optimistically mark as voted
+    localStorage.setItem(pollStorageKey(), optionIndex);
 
     try {
       await fetch(`${SUPABASE_URL}/rest/v1/poll_votes`, {
@@ -470,7 +496,28 @@
       });
     } catch(e) { console.error('Vote failed', e); }
 
-    // Re-fetch and show results
+    // Fetch fresh results and render
+    await refreshResults(true);
+  }
+
+  async function changeVote() {
+    if (!_pollId) return;
+    const body = document.getElementById('poll-body');
+
+    // Remove the stored vote from localStorage — user can now vote again
+    localStorage.removeItem(pollStorageKey());
+
+    // Fetch current poll question (in case it changed) and re-render voting UI
+    try {
+      const polls = await api(`poll?select=*&id=eq.${_pollId}`);
+      const poll  = polls[0];
+      renderVoting(body, poll.question, _pollOptions);
+    } catch(e) {
+      renderVoting(body, '', _pollOptions);
+    }
+  }
+
+  async function refreshResults(justVoted) {
     const body  = document.getElementById('poll-body');
     const polls = await api(`poll?select=*&id=eq.${_pollId}`);
     const poll  = polls[0];
@@ -478,7 +525,7 @@
     const options = poll.options || [];
     const counts  = options.map((_, i) => votes.filter(v => v.option_index === i).length);
     const total   = counts.reduce((a, b) => a + b, 0);
-    renderResults(body, options, counts, total, true);
+    renderResults(body, options, counts, total, justVoted);
   }
 
   function renderResults(body, options, counts, total, justVoted) {
@@ -497,7 +544,8 @@
     body.innerHTML = `
       <div class="poll-results">${bars}</div>
       ${justVoted ? `<div class="poll-voted-label">✓ Thanks for voting!</div>` : ''}
-      <div class="poll-total">${total} vote${total !== 1 ? 's' : ''} total</div>`;
+      <div class="poll-total">${total} vote${total !== 1 ? 's' : ''} total</div>
+      <button class="poll-change-btn" onclick="changeVote()">↩ Change my answer</button>`;
   }
 
   // ── Accordion ─────────────────────────────────────────────────

@@ -127,6 +127,9 @@
   .poll-stats{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:14px}
   .poll-stats-title{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 
+  /* Clear votes note */
+  .clear-votes-note{font-size:11px;color:var(--light);margin-top:6px;line-height:1.5}
+
   /* MODAL */
   .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
   .modal-overlay.open{display:flex}
@@ -264,10 +267,19 @@
           <div class="poll-stats" id="poll-stats" style="display:none">
             <div class="poll-stats-title">Current results</div>
             <div id="poll-vote-bars"></div>
-            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
               <button class="btn btn-danger btn-sm" onclick="clearVotes()">🗑 Clear all votes</button>
               <span id="poll-total-label" style="font-size:12px;color:var(--muted);align-self:center"></span>
             </div>
+            <!--
+              Clearing votes deletes all rows from poll_votes in Supabase AND increments
+              vote_version on the poll row. The public site uses localStorage keys of the
+              form  poll_voted_{id}_v{version}  so old keys become orphaned and every
+              previous voter is prompted to vote again automatically.
+            -->
+            <p class="clear-votes-note">
+              Clearing votes removes all responses from the database and resets the vote counter for all users — they'll be able to vote again.
+            </p>
           </div>
 
           <div style="margin-top:14px;display:flex;gap:8px">
@@ -512,7 +524,7 @@
         const { error } = await sb.from('poll').update({ question, options, enabled }).eq('id', _pollData.id);
         if (error) throw error;
       } else {
-        const { data, error } = await sb.from('poll').insert({ question, options, enabled }).select();
+        const { data, error } = await sb.from('poll').insert({ question, options, enabled, vote_version: 0 }).select();
         if (error) throw error;
         _pollData = data[0];
       }
@@ -528,11 +540,30 @@
 
   async function clearVotes() {
     if (!_pollData?.id) return;
-    if (!confirm('Clear all votes for this poll? This cannot be undone.')) return;
-    const { error } = await sb.from('poll_votes').delete().eq('poll_id', _pollData.id);
-    if (error) { showToast('Failed to clear votes', true); return; }
-    showToast('Votes cleared ✓');
-    await loadPollVotes();
+    if (!confirm('Clear all votes for this poll?\n\nThis will:\n• Delete all votes from the database\n• Allow all previous voters to vote again\n\nThis cannot be undone.')) return;
+
+    try {
+      // 1. Delete all vote rows from Supabase
+      const { error: delError } = await sb.from('poll_votes').delete().eq('poll_id', _pollData.id);
+      if (delError) throw delError;
+
+      // 2. Increment vote_version on the poll row.
+      //    The public site keys localStorage as  poll_voted_{id}_v{version}
+      //    so bumping the version orphans all existing "already voted" flags,
+      //    meaning every previous voter will see the voting UI again automatically.
+      const newVersion = (_pollData.vote_version ?? 0) + 1;
+      const { error: updError } = await sb.from('poll')
+        .update({ vote_version: newVersion })
+        .eq('id', _pollData.id);
+      if (updError) throw updError;
+
+      _pollData.vote_version = newVersion;
+      showToast('Votes cleared — all users can vote again ✓');
+      await loadPollVotes();
+    } catch(e) {
+      showToast('Failed to clear votes', true);
+      console.error(e);
+    }
   }
 
   // ── Render ────────────────────────────────────────────────────
