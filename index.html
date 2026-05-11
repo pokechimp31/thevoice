@@ -22,18 +22,12 @@
     --font-head: 'Playfair Display', Georgia, serif;
     --font-body: 'Source Serif 4', Georgia, serif;
     --font-ui: 'DM Sans', sans-serif;
+    --priority-important: #e67e22;
+    --priority-very-important: #c0392b;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.7;
-  }
-
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.7; }
   a { color: var(--red); text-decoration: none; }
   a:hover { text-decoration: underline; }
 
@@ -41,26 +35,59 @@
   .masthead {
     background: var(--bg-card);
     border-bottom: 3px solid var(--red);
-    padding: 24px 0 18px;
-    text-align: center;
     position: sticky;
     top: 0;
     z-index: 100;
     box-shadow: 0 2px 12px rgba(44,44,44,.07);
   }
   .masthead-inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    gap: 16px;
+  }
+
+  /* Left: Lunch */
+  .masthead-lunch {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .masthead-side-label {
+    font-family: var(--font-ui);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--text-light);
+  }
+  .masthead-lunch-text {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* Center: Title */
+  .masthead-center {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .masthead-logo-title {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 20px;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 24px;
+    gap: 12px;
   }
-  .masthead-logo { width: 60px; height: 60px; flex-shrink: 0; }
+  .masthead-logo { width: 48px; height: 48px; flex-shrink: 0; }
   .masthead-title {
     font-family: var(--font-head);
-    font-size: clamp(2rem, 6vw, 3.2rem);
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
     font-weight: 900;
     color: var(--red);
     letter-spacing: -.5px;
@@ -68,17 +95,50 @@
   }
   .masthead-sub {
     font-family: var(--font-ui);
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: .18em;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin-top: 2px;
   }
   .masthead-meta {
     font-family: var(--font-ui);
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-light);
-    margin-top: 6px;
+  }
+
+  /* Right: Weather */
+  .masthead-weather {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+  .masthead-weather-main {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .weather-icon { font-size: 20px; line-height: 1; }
+  .weather-temp {
+    font-family: var(--font-ui);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+  }
+  .weather-desc {
+    font-family: var(--font-ui);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .weather-day-label {
+    font-family: var(--font-ui);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    text-align: right;
   }
 
   /* ── Layout ── */
@@ -106,12 +166,7 @@
     color: var(--text);
     transition: border-color .15s, background .15s;
   }
-  .quick-link:hover {
-    background: var(--red-light);
-    border-color: var(--red);
-    color: var(--red);
-    text-decoration: none;
-  }
+  .quick-link:hover { background: var(--red-light); border-color: var(--red); color: var(--red); text-decoration: none; }
 
   /* ── Alert Banner ── */
   .alert-banner {
@@ -154,21 +209,25 @@
     border-radius: var(--radius);
     padding: 14px 16px;
   }
-  .deadline-date {
+  .deadline-date { font-family: var(--font-ui); font-size: 11px; font-weight: 500; color: var(--red); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+  .deadline-title { font-family: var(--font-body); font-size: 15px; font-weight: 600; line-height: 1.3; }
+
+  /* ── Priority badges ── */
+  .priority-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 4px;
+    padding: 2px 8px;
     font-family: var(--font-ui);
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--red);
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    margin-bottom: 4px;
-  }
-  .deadline-title {
-    font-family: var(--font-body);
-    font-size: 15px;
+    font-size: 10px;
     font-weight: 600;
-    line-height: 1.3;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    flex-shrink: 0;
   }
+  .priority-important { background: #fef3e2; color: var(--priority-important); border: 1px solid #f5cba7; }
+  .priority-very-important { background: var(--red-light); color: var(--priority-very-important); border: 1px solid #f1948a; }
 
   /* ── Accordion ── */
   .accordion { margin-bottom: 36px; }
@@ -179,6 +238,9 @@
     margin-bottom: 8px;
     overflow: hidden;
   }
+  .accordion-item.priority-important-item { border-left: 3px solid var(--priority-important); }
+  .accordion-item.priority-very-important-item { border-left: 3px solid var(--priority-very-important); }
+
   .accordion-trigger {
     width: 100%;
     background: none;
@@ -192,7 +254,8 @@
     text-align: left;
   }
   .accordion-trigger:hover { background: var(--bg); }
-  .accordion-trigger-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+  .accordion-trigger-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+  .accordion-trigger-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .accordion-badge {
     background: var(--red-light);
     color: var(--red);
@@ -202,39 +265,18 @@
     font-size: 11px;
     font-weight: 500;
     white-space: nowrap;
-    flex-shrink: 0;
   }
-  .accordion-title {
-    font-family: var(--font-body);
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1.3;
-  }
-  .accordion-preview {
-    font-family: var(--font-ui);
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
+  .accordion-title { font-family: var(--font-body); font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.3; }
+  .accordion-preview { font-family: var(--font-ui); font-size: 13px; color: var(--text-muted); margin-top: 2px; }
   .accordion-arrow {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
+    width: 20px; height: 20px; border-radius: 50%;
     background: var(--bg-rule);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
     transition: transform .25s, background .15s;
-    font-size: 12px;
-    color: var(--text-muted);
+    font-size: 12px; color: var(--text-muted);
   }
-  .accordion-item.open .accordion-arrow {
-    transform: rotate(180deg);
-    background: var(--red-light);
-    color: var(--red);
-  }
+  .accordion-item.open .accordion-arrow { transform: rotate(180deg); background: var(--red-light); color: var(--red); }
   .accordion-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
   .accordion-body-inner {
     padding: 0 20px 20px;
@@ -244,41 +286,63 @@
   }
   .accordion-body-inner p { margin-top: 12px; }
   .accordion-body-inner p:first-child { margin-top: 14px; }
-  .accordion-body-inner ul { padding-left: 20px; margin-top: 8px; }
+  .accordion-body-inner ul, .accordion-body-inner ol { padding-left: 20px; margin-top: 8px; }
   .accordion-body-inner li { margin-bottom: 6px; }
-  .accordion-body-inner .detail-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-family: var(--font-ui);
-    font-size: 13px;
-    color: var(--red);
-    margin-top: 10px;
-    font-weight: 500;
-  }
+  .accordion-body-inner h2, .accordion-body-inner h3 { margin-top: 16px; margin-bottom: 4px; font-family: var(--font-head); }
 
   /* ── Misc ── */
   .divider { height: 1px; background: var(--border); margin: 36px 0; }
-  .loading {
-    text-align: center;
-    padding: 60px;
-    font-family: var(--font-ui);
-    color: var(--text-muted);
-    font-size: 14px;
-  }
-  .footer {
-    border-top: 2px solid var(--border);
-    padding: 28px 0 0;
-    text-align: center;
-    font-family: var(--font-ui);
-    font-size: 12px;
-    color: var(--text-light);
-  }
+  .loading { text-align: center; padding: 60px; font-family: var(--font-ui); color: var(--text-muted); font-size: 14px; }
+  .footer { border-top: 2px solid var(--border); padding: 28px 0 0; text-align: center; font-family: var(--font-ui); font-size: 12px; color: var(--text-light); }
   .footer a { color: var(--text-muted); }
 
-  @media (max-width: 600px) {
-    .masthead-inner { flex-direction: column; text-align: center; }
+  /* ── Mobile ── */
+  @media (max-width: 680px) {
+    /* Masthead: title on top, lunch+weather side by side below */
+    .masthead-inner {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      padding: 12px 16px 10px;
+      gap: 10px 12px;
+    }
+    /* Title spans full width on top row */
+    .masthead-center {
+      grid-column: 1 / -1;
+      grid-row: 1;
+    }
+    .masthead-title { font-size: 2rem; }
+    .masthead-logo { width: 36px; height: 36px; }
+
+    /* Lunch on bottom-left */
+    .masthead-lunch {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    /* Weather on bottom-right */
+    .masthead-weather {
+      grid-column: 2;
+      grid-row: 2;
+      align-items: flex-end;
+    }
+    .weather-day-label { text-align: right; }
+    .weather-temp { font-size: 18px; }
+    .weather-icon { font-size: 16px; }
+    .weather-desc { font-size: 11px; }
+    .masthead-lunch-text { font-size: 12px; }
+
+    /* Content */
+    .page { padding: 20px 16px 48px; }
     .deadlines-grid { grid-template-columns: 1fr; }
+    .accordion-title { font-size: 15px; }
+    .quick-links { gap: 6px; }
+    .quick-link { font-size: 12px; padding: 4px 12px; }
+  }
+
+  @media (max-width: 400px) {
+    .masthead-lunch-text { font-size: 11px; }
+    .weather-desc { display: none; }
+    .masthead-title { font-size: 1.7rem; }
   }
 </style>
 </head>
@@ -286,15 +350,36 @@
 
 <header class="masthead">
   <div class="masthead-inner">
-    <svg class="masthead-logo" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="30" cy="30" r="29" fill="#c0392b" stroke="#962d22" stroke-width="1.5"/>
-      <text x="30" y="42" text-anchor="middle" font-family="'Playfair Display',serif" font-size="32" font-weight="900" fill="white">P</text>
-    </svg>
-    <div>
-      <div class="masthead-title">The Voice</div>
+
+    <!-- Left: Lunch -->
+    <div class="masthead-lunch">
+      <span class="masthead-side-label">🍽 Today's Lunch</span>
+      <span class="masthead-lunch-text" id="lunch-text">Loading…</span>
+    </div>
+
+    <!-- Center: Title -->
+    <div class="masthead-center">
+      <div class="masthead-logo-title">
+        <svg class="masthead-logo" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="30" cy="30" r="29" fill="#c0392b" stroke="#962d22" stroke-width="1.5"/>
+          <text x="30" y="42" text-anchor="middle" font-family="'Playfair Display',serif" font-size="32" font-weight="900" fill="white">P</text>
+        </svg>
+        <div class="masthead-title">The Voice</div>
+      </div>
       <div class="masthead-sub">The Pennington School</div>
       <div class="masthead-meta" id="issue-meta">Loading…</div>
     </div>
+
+    <!-- Right: Weather -->
+    <div class="masthead-weather">
+      <span class="weather-day-label" id="weather-day-label">Next school day</span>
+      <div class="masthead-weather-main">
+        <span class="weather-icon" id="weather-icon">—</span>
+        <span class="weather-temp" id="weather-temp">—</span>
+      </div>
+      <span class="weather-desc" id="weather-desc">Loading…</span>
+    </div>
+
   </div>
 </header>
 
@@ -309,39 +394,92 @@
 </main>
 
 <script>
-  // ── Config ────────────────────────────────────────────────────
-  const SUPABASE_URL      = 'https://fcrghpinecvnxfcgfbbx.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjcmdocGluZWN2bnhmY2dmYmJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNzE2MjAsImV4cCI6MjA5Mzg0NzYyMH0.yRKPTYGSMet0e0HBKatI7cQ1JkdObt386b7uz3MRM_I';
-  // ─────────────────────────────────────────────────────────────
-
-  // ── Auth-link redirect (must run before anything else) ────────
+  // ── Auth redirect ─────────────────────────────────────────────
   const AUTH_TOKENS = ['recovery_token', 'invite_token', 'confirmation_token'];
   if (AUTH_TOKENS.some(t => window.location.hash.includes(t))) {
     window.location.replace('password.html' + window.location.hash);
-    // Stop all further execution while the browser navigates away
-    throw new Error('Redirecting to password reset page…');
+    throw new Error('Redirecting…');
   }
-  // ─────────────────────────────────────────────────────────────
 
-  // ── Helpers ───────────────────────────────────────────────────
+  // ── Config ────────────────────────────────────────────────────
+  const SUPABASE_URL      = 'https://fcrghpinecvnxfcgfbbx.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjcmdocGluZWN2bnhmY2dmYmJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNzE2MjAsImV4cCI6MjA5Mzg0NzYyMH0.yRKPTYGSMet0e0HBKatI7cQ1JkdObt386b7uz3MRM_I';
+
+  // ── Pennington, NJ coords ─────────────────────────────────────
+  const LAT = 40.3271, LON = -74.7899;
+
   function esc(s) {
     if (!s) return '';
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   async function api(path) {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-      },
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
     });
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     return res.json();
+  }
+
+  // ── Weather ───────────────────────────────────────────────────
+  function nextWeekday() {
+    const d = new Date();
+    const day = d.getDay(); // 0=Sun,6=Sat
+    let add = 1;
+    if (day === 5) add = 3; // Friday → Monday
+    if (day === 6) add = 2; // Saturday → Monday
+    d.setDate(d.getDate() + add);
+    return d;
+  }
+
+  function weatherIcon(code) {
+    if (code === 0) return '☀️';
+    if (code <= 2) return '⛅';
+    if (code <= 3) return '☁️';
+    if (code <= 49) return '🌫️';
+    if (code <= 59) return '🌦️';
+    if (code <= 69) return '🌧️';
+    if (code <= 79) return '🌨️';
+    if (code <= 84) return '🌧️';
+    if (code <= 99) return '⛈️';
+    return '🌡️';
+  }
+
+  function weatherDesc(code) {
+    if (code === 0) return 'Clear skies';
+    if (code <= 2) return 'Partly cloudy';
+    if (code <= 3) return 'Overcast';
+    if (code <= 49) return 'Foggy';
+    if (code <= 59) return 'Drizzle';
+    if (code <= 69) return 'Rainy';
+    if (code <= 79) return 'Snow';
+    if (code <= 84) return 'Rain showers';
+    if (code <= 99) return 'Thunderstorms';
+    return 'Unknown';
+  }
+
+  async function loadWeather() {
+    try {
+      const target = nextWeekday();
+      const dateStr = target.toISOString().split('T')[0];
+      const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      const dayName = days[target.getDay()];
+
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&daily=weathercode,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=America/New_York&start_date=${dateStr}&end_date=${dateStr}`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const code = data.daily.weathercode[0];
+      const hi   = Math.round(data.daily.temperature_2m_max[0]);
+      const lo   = Math.round(data.daily.temperature_2m_min[0]);
+
+      document.getElementById('weather-day-label').textContent = dayName;
+      document.getElementById('weather-icon').textContent  = weatherIcon(code);
+      document.getElementById('weather-temp').textContent  = `${hi}°`;
+      document.getElementById('weather-desc').textContent  = `${weatherDesc(code)} · Low ${lo}°F`;
+    } catch {
+      document.getElementById('weather-desc').textContent = 'Unavailable';
+    }
   }
 
   // ── Accordion ─────────────────────────────────────────────────
@@ -351,18 +489,14 @@
         const item = btn.closest('.accordion-item');
         const body = item.querySelector('.accordion-body');
         const isOpen = item.classList.contains('open');
-
-        // Close all siblings
         item.closest('.accordion').querySelectorAll('.accordion-item').forEach(s => {
           s.classList.remove('open');
-          s.querySelector('.accordion-trigger').setAttribute('aria-expanded', 'false');
+          s.querySelector('.accordion-trigger').setAttribute('aria-expanded','false');
           s.querySelector('.accordion-body').style.maxHeight = '0';
         });
-
-        // Open this one if it was closed
         if (!isOpen) {
           item.classList.add('open');
-          btn.setAttribute('aria-expanded', 'true');
+          btn.setAttribute('aria-expanded','true');
           body.style.maxHeight = body.scrollHeight + 'px';
         }
       });
@@ -370,40 +504,43 @@
   }
 
   // ── Render ────────────────────────────────────────────────────
-  function buildQuickLinks(links) {
-    if (!links.length) return '';
-    const items = links.map(l =>
-      `<a class="quick-link" href="${esc(l.url)}" target="_blank">
-        ${l.emoji ? `<span>${esc(l.emoji)}</span>` : ''}
-        ${esc(l.label)}
-      </a>`
-    ).join('');
-    return `<nav class="quick-links">${items}</nav>`;
+  function priorityBadge(p) {
+    if (p === 'important') return `<span class="priority-badge priority-important">⚠ Important</span>`;
+    if (p === 'very_important') return `<span class="priority-badge priority-very-important">🔴 Very Important</span>`;
+    return '';
   }
 
-  function buildAlert(alert) {
-    if (!alert?.enabled) return '';
-    return `<div class="alert-banner" role="alert"><span>📢</span><span>${esc(alert.text)}</span></div>`;
+  function priorityClass(p) {
+    if (p === 'important') return 'priority-important-item';
+    if (p === 'very_important') return 'priority-very-important-item';
+    return '';
+  }
+
+  function buildQuickLinks(links) {
+    if (!links.length) return '';
+    return `<nav class="quick-links">${links.map(l =>
+      `<a class="quick-link" href="${esc(l.url)}" target="_blank">${l.emoji ? `<span>${esc(l.emoji)}</span>` : ''}${esc(l.label)}</a>`
+    ).join('')}</nav>`;
+  }
+
+  function buildAlert(al) {
+    if (!al?.enabled) return '';
+    return `<div class="alert-banner" role="alert"><span>📢</span><span>${esc(al.text)}</span></div>`;
   }
 
   function buildDeadlines(deadlines) {
     if (!deadlines.length) return '';
-    const cards = deadlines.map(d =>
-      `<div class="deadline-card">
-        <div class="deadline-date">${esc(d.date_label)}</div>
-        <div class="deadline-title">${esc(d.title)}</div>
-      </div>`
-    ).join('');
-    return `<div class="section-label">Upcoming deadlines</div><div class="deadlines-grid">${cards}</div>`;
+    return `<div class="section-label">Upcoming deadlines</div><div class="deadlines-grid">${
+      deadlines.map(d => `<div class="deadline-card"><div class="deadline-date">${esc(d.date_label)}</div><div class="deadline-title">${esc(d.title)}</div></div>`).join('')
+    }</div>`;
   }
 
   function buildSections(sections, stories) {
     return sections.map((sec, i) => {
       const secStories = stories.filter(s => s.section_id === sec.id);
       if (!secStories.length) return '';
-
       const items = secStories.map(s => `
-        <div class="accordion-item">
+        <div class="accordion-item ${priorityClass(s.priority)}">
           <button class="accordion-trigger" aria-expanded="false">
             <div class="accordion-trigger-left">
               <div>
@@ -411,17 +548,17 @@
                 ${s.preview ? `<div class="accordion-preview">${esc(s.preview)}</div>` : ''}
               </div>
             </div>
-            ${s.badge ? `<span class="accordion-badge">${esc(s.badge)}</span>` : ''}
-            <div class="accordion-arrow">▼</div>
+            <div class="accordion-trigger-right">
+              ${priorityBadge(s.priority)}
+              ${s.badge ? `<span class="accordion-badge">${esc(s.badge)}</span>` : ''}
+              <div class="accordion-arrow">▼</div>
+            </div>
           </button>
           <div class="accordion-body">
-            <div class="accordion-body-inner">${s.body_html}</div>
+            <div class="accordion-body-inner">${s.body_html || ''}</div>
           </div>
-        </div>`
-      ).join('');
-
-      return `
-        ${i > 0 ? '<div class="divider"></div>' : ''}
+        </div>`).join('');
+      return `${i > 0 ? '<div class="divider"></div>' : ''}
         <div class="section-label">${esc(sec.name)}</div>
         <div class="accordion" id="acc-${sec.id}">${items}</div>`;
     }).join('');
@@ -438,12 +575,11 @@
       api('stories?select=*&order=sort_order'),
     ]);
 
-    // Issue meta
     const iss = issues[0] || {};
     document.getElementById('issue-meta').textContent =
       [iss.issue_date, iss.day_label, iss.rotation_day].filter(Boolean).join(' · ');
+    document.getElementById('lunch-text').textContent = iss.lunch || 'Not set';
 
-    // Render page
     document.getElementById('app').innerHTML = [
       buildQuickLinks(links),
       buildAlert(alerts[0]),
@@ -454,11 +590,11 @@
     initAccordions();
   }
 
-  load().catch(err => {
-    console.error(err);
-    document.getElementById('app').innerHTML =
-      `<div class="loading">Could not load content. Please try again later.</div>`;
+  load().catch(() => {
+    document.getElementById('app').innerHTML = `<div class="loading">Could not load content. Please try again later.</div>`;
   });
+
+  loadWeather();
 </script>
 </body>
 </html>

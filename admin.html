@@ -5,13 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Voice — Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root{
+  :root {
     --red:#c0392b;--red-light:#f9eeec;--bg:#f4f1ed;--card:#fff;
     --border:#e0d6cb;--text:#2c2c2c;--muted:#7a6e64;--light:#a99e94;
     --radius:10px;--font:'DM Sans',sans-serif;
+    --font-head:'Playfair Display',Georgia,serif;
+    --font-body:'Source Serif 4',Georgia,serif;
+    --priority-important:#e67e22;--priority-very:#c0392b;
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.6}
@@ -22,13 +25,13 @@
   .login-logo{width:52px;height:52px;margin:0 auto 16px}
   .login-title{font-size:22px;font-weight:600;color:var(--red);margin-bottom:4px}
   .login-sub{font-size:13px;color:var(--muted);margin-bottom:28px}
-  .login-note{font-size:12px;color:var(--light);margin-top:16px}
   .login-form{text-align:left;margin-bottom:16px}
   .login-form label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:4px;margin-top:14px}
   .login-form label:first-child{margin-top:0}
   .login-form input{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--font);outline:none;transition:border-color .15s;background:white;color:var(--text)}
   .login-form input:focus{border-color:var(--red)}
   .login-error{font-size:12px;color:var(--red);margin-top:10px;min-height:18px}
+  .login-note{font-size:12px;color:var(--light);margin-top:16px}
 
   /* BUTTONS */
   .btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:8px;padding:8px 16px;font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .15s,background .15s}
@@ -46,10 +49,17 @@
   .admin-logo-sm{width:32px;height:32px}
   .admin-title{font-size:16px;font-weight:600;color:var(--red)}
   .admin-subtitle{font-size:12px;color:var(--muted)}
-  .admin-body{max-width:960px;margin:0 auto;padding:32px 24px 80px;display:flex;flex-direction:column;gap:28px}
+
+  /* SPLIT LAYOUT */
+  .admin-split{display:flex;min-height:calc(100vh - 60px)}
+  .admin-editor{flex:1;padding:28px 24px 100px;max-width:680px;overflow-y:auto}
+  .admin-preview{width:420px;flex-shrink:0;border-left:1px solid var(--border);background:var(--card);position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;display:flex;flex-direction:column}
+  .preview-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--card);position:sticky;top:0;z-index:5}
+  .preview-title{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .preview-frame{flex:1;padding:20px;background:#faf6f1;overflow-y:auto}
 
   /* CARDS */
-  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
   .card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
   .card-title{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
   .card-body{padding:20px}
@@ -57,17 +67,16 @@
   /* FORMS */
   label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:4px;margin-top:14px}
   label:first-child{margin-top:0}
-  input[type=text],textarea,select{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--font);outline:none;transition:border-color .15s;background:white;color:var(--text)}
-  input[type=text]:focus,textarea:focus,select:focus{border-color:var(--red)}
-  textarea{resize:vertical;min-height:90px}
+  input[type=text],input[type=password],textarea,select{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--font);outline:none;transition:border-color .15s;background:white;color:var(--text)}
+  input[type=text]:focus,input[type=password]:focus,textarea:focus,select:focus{border-color:var(--red)}
 
   /* TOGGLE */
   .toggle{position:relative;width:42px;height:24px;flex-shrink:0}
   .toggle input{opacity:0;width:0;height:0}
   .toggle-slider{position:absolute;inset:0;background:#ddd;border-radius:12px;cursor:pointer;transition:background .2s}
   .toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:white;border-radius:50%;transition:transform .2s}
-  .toggle input:checked + .toggle-slider{background:var(--red)}
-  .toggle input:checked + .toggle-slider::before{transform:translateX(18px)}
+  .toggle input:checked+.toggle-slider{background:var(--red)}
+  .toggle input:checked+.toggle-slider::before{transform:translateX(18px)}
 
   /* LIST ITEMS */
   .list-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
@@ -78,20 +87,76 @@
   .list-item-actions{display:flex;gap:4px;flex-shrink:0}
   .empty-state{text-align:center;padding:24px;color:var(--light);font-size:13px}
 
+  /* PRIORITY SELECTOR */
+  .priority-selector{display:flex;gap:8px;margin-top:8px}
+  .priority-opt{flex:1;border:1px solid var(--border);border-radius:8px;padding:8px 10px;cursor:pointer;text-align:center;font-size:12px;font-weight:500;transition:all .15s;background:white}
+  .priority-opt:hover{border-color:var(--muted)}
+  .priority-opt.selected-none{border-color:var(--text);background:#f0f0f0;color:var(--text)}
+  .priority-opt.selected-important{border-color:var(--priority-important);background:#fef3e2;color:var(--priority-important)}
+  .priority-opt.selected-very{border-color:var(--priority-very);background:var(--red-light);color:var(--priority-very)}
+
+  /* RICH TEXT EDITOR */
+  .rich-editor-wrap{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:white}
+  .rich-toolbar{display:flex;flex-wrap:wrap;gap:2px;padding:8px;border-bottom:1px solid var(--border);background:#fafafa}
+  .rich-btn{background:none;border:none;cursor:pointer;padding:5px 8px;border-radius:5px;font-size:13px;color:var(--text);font-family:var(--font);transition:background .15s;line-height:1}
+  .rich-btn:hover{background:var(--bg)}
+  .rich-btn.active{background:var(--red-light);color:var(--red)}
+  .rich-sep{width:1px;background:var(--border);margin:2px 4px;align-self:stretch}
+  .rich-content{min-height:180px;padding:12px 14px;outline:none;font-size:14px;font-family:var(--font-body);line-height:1.7;color:var(--text)}
+  .rich-content:empty::before{content:attr(data-placeholder);color:var(--light);pointer-events:none}
+  .rich-content h2{font-family:var(--font-head);font-size:18px;margin:12px 0 4px}
+  .rich-content h3{font-family:var(--font-head);font-size:15px;margin:10px 0 4px}
+  .rich-content p{margin:6px 0}
+  .rich-content ul,
+  .rich-content ol{padding-left:20px;margin:6px 0}
+  .rich-content li{margin-bottom:3px}
+  .rich-content a{color:var(--red)}
+  .rich-content strong{font-weight:700}
+  .rich-content em{font-style:italic}
+  .rich-content u{text-decoration:underline}
+
   /* MODAL */
   .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
   .modal-overlay.open{display:flex}
-  .modal{background:var(--card);border-radius:14px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.15)}
+  .modal{background:var(--card);border-radius:14px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.15)}
   .modal-header{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
   .modal-title{font-size:15px;font-weight:600}
   .modal-body{padding:20px}
   .modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
 
-  /* SECTIONS */
+  /* SECTION ITEMS */
   .section-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px}
   .section-item-header{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .section-name{font-weight:500;font-size:13px;flex:1}
   .section-stories-count{font-size:12px;color:var(--muted)}
+
+  /* PRIORITY BADGE (in list) */
+  .p-badge{display:inline-block;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-left:6px}
+  .p-badge-important{background:#fef3e2;color:var(--priority-important);border:1px solid #f5cba7}
+  .p-badge-very{background:var(--red-light);color:var(--priority-very);border:1px solid #f1948a}
+
+  /* PREVIEW STYLES (mirrors index.html) */
+  .pv-section-label{font-family:var(--font);font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#a99e94;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #e0d6cb}
+  .pv-accordion{margin-bottom:20px}
+  .pv-item{background:white;border:1px solid #e0d6cb;border-radius:8px;margin-bottom:6px;overflow:hidden}
+  .pv-item.pv-important{border-left:3px solid #e67e22}
+  .pv-item.pv-very{border-left:3px solid #c0392b}
+  .pv-trigger{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer}
+  .pv-trigger-left{flex:1;min-width:0}
+  .pv-title{font-family:var(--font-body);font-size:14px;font-weight:600;color:#2c2c2c;line-height:1.3}
+  .pv-preview{font-family:var(--font);font-size:11px;color:#7a6e64;margin-top:2px}
+  .pv-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  .pv-badge{background:#f9eeec;color:#c0392b;border-radius:4px;padding:2px 8px;font-family:var(--font);font-size:10px;font-weight:500;white-space:nowrap}
+  .pv-priority{border-radius:3px;padding:2px 7px;font-family:var(--font);font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+  .pv-priority-imp{background:#fef3e2;color:#e67e22;border:1px solid #f5cba7}
+  .pv-priority-very{background:#f9eeec;color:#c0392b;border:1px solid #f1948a}
+  .pv-body{padding:10px 14px;border-top:1px solid #e0d6cb;font-family:var(--font-body);font-size:13px;line-height:1.6;display:none}
+  .pv-body.open{display:block}
+  .pv-empty{text-align:center;padding:20px;color:#a99e94;font-size:12px}
+  .pv-deadline-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+  .pv-deadline{background:white;border:1px solid #e0d6cb;border-left:3px solid #c0392b;border-radius:6px;padding:10px 12px}
+  .pv-deadline-date{font-family:var(--font);font-size:10px;font-weight:500;color:#c0392b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+  .pv-deadline-title{font-family:var(--font-body);font-size:13px;font-weight:600}
 
   /* TOAST */
   #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:#2c2c2c;color:white;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:999}
@@ -99,7 +164,7 @@
   #toast.error{background:#c0392b}
 
   /* SAVE BAR */
-  .save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:12px 24px;display:flex;justify-content:center;gap:12px;z-index:60;box-shadow:0 -4px 16px rgba(0,0,0,.06)}
+  .save-bar{position:fixed;bottom:0;left:0;right:420px;background:var(--card);border-top:1px solid var(--border);padding:12px 24px;display:flex;justify-content:center;gap:12px;z-index:60;box-shadow:0 -4px 16px rgba(0,0,0,.06)}
 </style>
 </head>
 <body>
@@ -117,7 +182,7 @@
       <label>Email</label>
       <input type="text" id="login-email" placeholder="you@pennington.org" autocomplete="email">
       <label>Password</label>
-      <input type="text" id="login-password" placeholder="••••••••" autocomplete="current-password">
+      <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
     </div>
     <button class="btn btn-primary" style="width:100%" onclick="login()">Sign in</button>
     <div class="login-error" id="login-error"></div>
@@ -144,66 +209,81 @@
     </div>
   </header>
 
-  <div class="admin-body">
+  <div class="admin-split">
+    <!-- EDITOR COLUMN -->
+    <div class="admin-editor">
 
-    <!-- ISSUE INFO -->
-    <div class="card">
-      <div class="card-header"><span class="card-title">Issue info</span></div>
-      <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-        <div><label>Issue date</label><input type="text" id="iss-date" placeholder="Thursday, May 7, 2026"></div>
-        <div><label>Day label</label><input type="text" id="iss-day" placeholder="Day 1"></div>
-        <div><label>Rotation</label><input type="text" id="iss-rotation" placeholder="Advisory"></div>
+      <!-- ISSUE INFO -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Issue info</span></div>
+        <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div><label>Issue date</label><input type="text" id="iss-date" placeholder="Thursday, May 7, 2026"></div>
+          <div><label>Day label</label><input type="text" id="iss-day" placeholder="Day 1"></div>
+          <div><label>Rotation</label><input type="text" id="iss-rotation" placeholder="Advisory"></div>
+          <div><label>🍽 Today's lunch</label><input type="text" id="iss-lunch" placeholder="Pizza, salad bar, milk"></div>
+        </div>
       </div>
+
+      <!-- ALERT BANNER -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Alert banner</span>
+          <label class="toggle">
+            <input type="checkbox" id="alert-enabled">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="card-body">
+          <label>Banner text</label>
+          <input type="text" id="alert-text" placeholder="e.g. AP Exams run May 4–22.">
+        </div>
+      </div>
+
+      <!-- QUICK LINKS -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Quick links</span>
+          <button class="btn btn-secondary btn-sm" onclick="openModal('link')">+ Add link</button>
+        </div>
+        <div class="card-body">
+          <div id="links-list"><div class="empty-state">No links yet.</div></div>
+        </div>
+      </div>
+
+      <!-- DEADLINES -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Deadline cards</span>
+          <button class="btn btn-secondary btn-sm" onclick="openModal('deadline')">+ Add deadline</button>
+        </div>
+        <div class="card-body">
+          <div id="deadlines-list"><div class="empty-state">No deadlines yet.</div></div>
+        </div>
+      </div>
+
+      <!-- SECTIONS & STORIES -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Sections &amp; stories</span>
+          <button class="btn btn-secondary btn-sm" onclick="openModal('section')">+ Add section</button>
+        </div>
+        <div class="card-body">
+          <div id="sections-list"><div class="empty-state">No sections yet.</div></div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- ALERT BANNER -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Alert banner</span>
-        <label class="toggle" title="Toggle banner visibility">
-          <input type="checkbox" id="alert-enabled">
-          <span class="toggle-slider"></span>
-        </label>
+    <!-- PREVIEW COLUMN -->
+    <div class="admin-preview">
+      <div class="preview-header">
+        <span class="preview-title">Live Preview</span>
+        <button class="btn btn-secondary btn-sm" onclick="renderPreview()">↺ Refresh</button>
       </div>
-      <div class="card-body">
-        <label>Banner text</label>
-        <input type="text" id="alert-text" placeholder="e.g. AP Exams run May 4–22. Classes are not cancelled on exam days.">
+      <div class="preview-frame" id="preview-frame">
+        <div class="pv-empty">Save or refresh to see preview.</div>
       </div>
     </div>
-
-    <!-- QUICK LINKS -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Quick links</span>
-        <button class="btn btn-secondary btn-sm" onclick="openModal('link')">+ Add link</button>
-      </div>
-      <div class="card-body">
-        <div id="links-list"><div class="empty-state">No links yet.</div></div>
-      </div>
-    </div>
-
-    <!-- DEADLINES -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Deadline cards</span>
-        <button class="btn btn-secondary btn-sm" onclick="openModal('deadline')">+ Add deadline</button>
-      </div>
-      <div class="card-body">
-        <div id="deadlines-list"><div class="empty-state">No deadlines yet.</div></div>
-      </div>
-    </div>
-
-    <!-- SECTIONS & STORIES -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Sections &amp; stories</span>
-        <button class="btn btn-secondary btn-sm" onclick="openModal('section')">+ Add section</button>
-      </div>
-      <div class="card-body">
-        <div id="sections-list"><div class="empty-state">No sections yet.</div></div>
-      </div>
-    </div>
-
   </div>
 
   <div class="save-bar">
@@ -230,7 +310,6 @@
 <div id="toast"></div>
 
 <script>
-  // ── Config ────────────────────────────────────────────────────
   const SUPABASE_URL      = 'https://fcrghpinecvnxfcgfbbx.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjcmdocGluZWN2bnhmY2dmYmJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNzE2MjAsImV4cCI6MjA5Mzg0NzYyMH0.yRKPTYGSMet0e0HBKatI7cQ1JkdObt386b7uz3MRM_I';
 
@@ -244,11 +323,7 @@
   // ── Auth ──────────────────────────────────────────────────────
   window.addEventListener('DOMContentLoaded', async () => {
     const { data: { session } } = await sb.auth.getSession();
-    if (session) {
-      currentUser = session.user;
-      showAdmin();
-      loadAll();
-    }
+    if (session) { currentUser = session.user; showAdmin(); loadAll(); }
   });
 
   async function login() {
@@ -256,15 +331,10 @@
     const password = document.getElementById('login-password').value;
     const errEl    = document.getElementById('login-error');
     errEl.textContent = '';
-
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) {
-      errEl.textContent = error.message;
-      return;
-    }
+    if (error) { errEl.textContent = error.message; return; }
     currentUser = data.user;
-    showAdmin();
-    loadAll();
+    showAdmin(); loadAll();
   }
 
   async function logout() {
@@ -280,26 +350,16 @@
     document.getElementById('user-email').textContent = currentUser?.email || '';
   }
 
-  // Allow pressing Enter to log in
   document.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') {
-      login();
-    }
+    if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') login();
   });
 
-  // ── API Helpers ───────────────────────────────────────────────
-  async function dbGet(table, qs = '') {
-    const { data, error } = await sb.from(table).select('*');
-    if (error) throw error;
-    return data;
-  }
-
+  // ── DB ────────────────────────────────────────────────────────
   async function dbUpsert(table, rows) {
     if (!rows.length) return;
     const { error } = await sb.from(table).upsert(rows);
     if (error) throw error;
   }
-
   async function dbDelete(table, id) {
     const { error } = await sb.from(table).delete().eq('id', id);
     if (error) throw error;
@@ -323,96 +383,142 @@
       state.sections  = sections.data     || [];
       state.stories   = stories.data      || [];
       renderAll();
-    } catch (e) {
-      showToast('Failed to load data', true);
-      console.error(e);
-    }
+      renderPreview();
+    } catch(e) { showToast('Failed to load data', true); console.error(e); }
   }
 
-  // ── Render ────────────────────────────────────────────────────
+  // ── Render editor ─────────────────────────────────────────────
   function renderAll() {
     document.getElementById('iss-date').value     = state.issue.issue_date   || '';
     document.getElementById('iss-day').value      = state.issue.day_label    || '';
     document.getElementById('iss-rotation').value = state.issue.rotation_day || '';
+    document.getElementById('iss-lunch').value    = state.issue.lunch        || '';
     document.getElementById('alert-enabled').checked = !!state.alert.enabled;
     document.getElementById('alert-text').value       = state.alert.text || '';
 
     const ll = document.getElementById('links-list');
-    ll.innerHTML = state.links.length
-      ? state.links.map((l, i) => `
-        <div class="list-item">
-          <div class="list-item-body">
-            <div class="list-item-title">${esc(l.emoji || '')} ${esc(l.label)}</div>
-            <div class="list-item-sub">${esc(l.url)}</div>
-          </div>
-          <div class="list-item-actions">
-            <button class="btn-icon" onclick="openModal('link',${i})">✏️</button>
-            <button class="btn-icon" onclick="removeItem('links',${i})">🗑️</button>
-          </div>
-        </div>`).join('')
-      : '<div class="empty-state">No links yet.</div>';
+    ll.innerHTML = state.links.length ? state.links.map((l,i) => `
+      <div class="list-item">
+        <div class="list-item-body">
+          <div class="list-item-title">${esc(l.emoji||'')} ${esc(l.label)}</div>
+          <div class="list-item-sub">${esc(l.url)}</div>
+        </div>
+        <div class="list-item-actions">
+          <button class="btn-icon" onclick="openModal('link',${i})">✏️</button>
+          <button class="btn-icon" onclick="removeItem('links',${i})">🗑️</button>
+        </div>
+      </div>`).join('') : '<div class="empty-state">No links yet.</div>';
 
     const dl = document.getElementById('deadlines-list');
-    dl.innerHTML = state.deadlines.length
-      ? state.deadlines.map((d, i) => `
-        <div class="list-item">
-          <div class="list-item-body">
-            <div class="list-item-title">${esc(d.title)}</div>
-            <div class="list-item-sub">${esc(d.date_label)}</div>
-          </div>
-          <div class="list-item-actions">
-            <button class="btn-icon" onclick="openModal('deadline',${i})">✏️</button>
-            <button class="btn-icon" onclick="removeItem('deadlines',${i})">🗑️</button>
-          </div>
-        </div>`).join('')
-      : '<div class="empty-state">No deadlines yet.</div>';
+    dl.innerHTML = state.deadlines.length ? state.deadlines.map((d,i) => `
+      <div class="list-item">
+        <div class="list-item-body">
+          <div class="list-item-title">${esc(d.title)}</div>
+          <div class="list-item-sub">${esc(d.date_label)}</div>
+        </div>
+        <div class="list-item-actions">
+          <button class="btn-icon" onclick="openModal('deadline',${i})">✏️</button>
+          <button class="btn-icon" onclick="removeItem('deadlines',${i})">🗑️</button>
+        </div>
+      </div>`).join('') : '<div class="empty-state">No deadlines yet.</div>';
 
     const sl = document.getElementById('sections-list');
-    sl.innerHTML = state.sections.length
-      ? state.sections.map((sec, si) => {
-          const ss = state.stories.filter(s => s.section_id === sec.id);
-          return `<div class="section-item">
-            <div class="section-item-header">
-              <span class="section-name">${esc(sec.name)}</span>
-              <span class="section-stories-count">${ss.length} stor${ss.length === 1 ? 'y' : 'ies'}</span>
-              <button class="btn btn-secondary btn-sm" onclick="openModal('story',null,'${sec.id}')">+ Story</button>
-              <button class="btn-icon" onclick="openModal('section',${si})">✏️</button>
-              <button class="btn-icon" onclick="removeItem('sections',${si})">🗑️</button>
+    sl.innerHTML = state.sections.length ? state.sections.map((sec,si) => {
+      const ss = state.stories.filter(s => s.section_id === sec.id);
+      return `<div class="section-item">
+        <div class="section-item-header">
+          <span class="section-name">${esc(sec.name)}</span>
+          <span class="section-stories-count">${ss.length} stor${ss.length===1?'y':'ies'}</span>
+          <button class="btn btn-secondary btn-sm" onclick="openModal('story',null,'${sec.id}')">+ Story</button>
+          <button class="btn-icon" onclick="openModal('section',${si})">✏️</button>
+          <button class="btn-icon" onclick="removeItem('sections',${si})">🗑️</button>
+        </div>
+        ${ss.map(s => {
+          const pi = storyIdx(s.id);
+          const pb = s.priority === 'important'
+            ? `<span class="p-badge p-badge-important">Important</span>`
+            : s.priority === 'very_important'
+            ? `<span class="p-badge p-badge-very">Very Important</span>` : '';
+          return `<div class="list-item" style="margin-top:8px">
+            <div class="list-item-body">
+              <div class="list-item-title">${esc(s.title)}${pb}</div>
+              <div class="list-item-sub">${esc(s.preview||'')}</div>
             </div>
-            ${ss.map(s => `
-              <div class="list-item" style="margin-top:8px">
-                <div class="list-item-body">
-                  <div class="list-item-title">${esc(s.title)}</div>
-                  <div class="list-item-sub">${esc(s.preview || '')}</div>
-                </div>
-                <div class="list-item-actions">
-                  <button class="btn-icon" onclick="openModal('story',${storyIdx(s.id)})">✏️</button>
-                  <button class="btn-icon" onclick="removeItem('stories',${storyIdx(s.id)})">🗑️</button>
-                </div>
-              </div>`).join('')}
+            <div class="list-item-actions">
+              <button class="btn-icon" onclick="openModal('story',${pi})">✏️</button>
+              <button class="btn-icon" onclick="removeItem('stories',${pi})">🗑️</button>
+            </div>
           </div>`;
-        }).join('')
-      : '<div class="empty-state">No sections yet.</div>';
+        }).join('')}
+      </div>`;
+    }).join('') : '<div class="empty-state">No sections yet.</div>';
   }
 
   function storyIdx(id) { return state.stories.findIndex(s => s.id === id); }
 
-  // ── Save All ──────────────────────────────────────────────────
+  // ── Preview renderer ──────────────────────────────────────────
+  function renderPreview() {
+    const frame = document.getElementById('preview-frame');
+    let html = '';
+
+    if (state.deadlines.length) {
+      html += `<div class="pv-section-label">Upcoming deadlines</div>
+        <div class="pv-deadline-grid">${state.deadlines.map(d => `
+          <div class="pv-deadline">
+            <div class="pv-deadline-date">${esc(d.date_label)}</div>
+            <div class="pv-deadline-title">${esc(d.title)}</div>
+          </div>`).join('')}</div>`;
+    }
+
+    state.sections.forEach((sec, i) => {
+      const ss = state.stories.filter(s => s.section_id === sec.id);
+      if (!ss.length) return;
+      if (i > 0) html += `<hr style="border:none;border-top:1px solid #e0d6cb;margin:16px 0">`;
+      html += `<div class="pv-section-label">${esc(sec.name)}</div><div class="pv-accordion">`;
+      ss.forEach((s, idx) => {
+        const pClass = s.priority === 'important' ? 'pv-important' : s.priority === 'very_important' ? 'pv-very' : '';
+        const pBadge = s.priority === 'important'
+          ? `<span class="pv-priority pv-priority-imp">⚠ Important</span>`
+          : s.priority === 'very_important'
+          ? `<span class="pv-priority pv-priority-very">🔴 Very Important</span>` : '';
+        html += `<div class="pv-item ${pClass}">
+          <div class="pv-trigger" onclick="this.nextElementSibling.classList.toggle('open')">
+            <div class="pv-trigger-left">
+              <div class="pv-title">${esc(s.title)}</div>
+              ${s.preview ? `<div class="pv-preview">${esc(s.preview)}</div>` : ''}
+            </div>
+            <div class="pv-right">
+              ${pBadge}
+              ${s.badge ? `<span class="pv-badge">${esc(s.badge)}</span>` : ''}
+              <span style="color:#a99e94;font-size:10px">▼</span>
+            </div>
+          </div>
+          <div class="pv-body">${s.body_html || ''}</div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+
+    if (!html) html = '<div class="pv-empty">No content yet — add some sections and stories.</div>';
+    frame.innerHTML = html;
+  }
+
+  // ── Save ──────────────────────────────────────────────────────
   async function saveAll() {
     const btn = document.getElementById('save-btn');
-    btn.textContent = 'Saving…';
-    btn.disabled = true;
+    btn.textContent = 'Saving…'; btn.disabled = true;
 
     state.issue.issue_date   = document.getElementById('iss-date').value;
     state.issue.day_label    = document.getElementById('iss-day').value;
     state.issue.rotation_day = document.getElementById('iss-rotation').value;
+    state.issue.lunch        = document.getElementById('iss-lunch').value;
     state.alert.enabled      = document.getElementById('alert-enabled').checked;
     state.alert.text         = document.getElementById('alert-text').value;
 
-    state.links.forEach((l, i)     => l.sort_order = i);
-    state.deadlines.forEach((d, i) => d.sort_order = i);
-    state.sections.forEach((s, i)  => s.sort_order = i);
-    state.stories.forEach((s, i)   => s.sort_order = i);
+    state.links.forEach((l,i)     => l.sort_order = i);
+    state.deadlines.forEach((d,i) => d.sort_order = i);
+    state.sections.forEach((s,i)  => s.sort_order = i);
+    state.stories.forEach((s,i)   => s.sort_order = i);
 
     try {
       await Promise.all([
@@ -424,12 +530,12 @@
         dbUpsert('stories',     state.stories),
       ]);
       showToast('All changes saved ✓');
-    } catch (e) {
+      renderPreview();
+    } catch(e) {
       showToast('Save failed — check console', true);
       console.error(e);
     } finally {
-      btn.textContent = 'Save all changes';
-      btn.disabled = false;
+      btn.textContent = 'Save all changes'; btn.disabled = false;
     }
   }
 
@@ -437,22 +543,80 @@
   async function removeItem(type, idx) {
     const arr  = state[type];
     const item = arr[idx];
-    const dbTable = type === 'links' ? 'quick_links' : type;
-    if (item?.id) await dbDelete(dbTable, item.id);
+    const tbl  = type === 'links' ? 'quick_links' : type;
+    if (item?.id) await dbDelete(tbl, item.id);
     arr.splice(idx, 1);
-    renderAll();
+    renderAll(); renderPreview();
+  }
+
+  // ── Rich text editor ──────────────────────────────────────────
+  function buildRichEditor(initialHtml = '') {
+    return `
+      <div class="rich-editor-wrap">
+        <div class="rich-toolbar">
+          <button type="button" class="rich-btn" onclick="fmt('bold')" title="Bold"><strong>B</strong></button>
+          <button type="button" class="rich-btn" onclick="fmt('italic')" title="Italic"><em>I</em></button>
+          <button type="button" class="rich-btn" onclick="fmt('underline')" title="Underline"><u>U</u></button>
+          <div class="rich-sep"></div>
+          <button type="button" class="rich-btn" onclick="fmtBlock('h2')" title="Heading">H2</button>
+          <button type="button" class="rich-btn" onclick="fmtBlock('h3')" title="Subheading">H3</button>
+          <button type="button" class="rich-btn" onclick="fmtBlock('p')" title="Paragraph">¶</button>
+          <div class="rich-sep"></div>
+          <button type="button" class="rich-btn" onclick="fmt('insertUnorderedList')" title="Bullet list">• List</button>
+          <button type="button" class="rich-btn" onclick="fmt('insertOrderedList')" title="Numbered list">1. List</button>
+          <div class="rich-sep"></div>
+          <button type="button" class="rich-btn" onclick="insertLink()" title="Link">🔗 Link</button>
+        </div>
+        <div class="rich-content" id="rich-editor" contenteditable="true"
+          data-placeholder="Write the story body here…">${initialHtml}</div>
+      </div>`;
+  }
+
+  function fmt(cmd) {
+    document.getElementById('rich-editor').focus();
+    document.execCommand(cmd, false, null);
+  }
+  function fmtBlock(tag) {
+    document.getElementById('rich-editor').focus();
+    document.execCommand('formatBlock', false, tag);
+  }
+  function insertLink() {
+    const url = prompt('Enter URL:');
+    if (url) {
+      document.getElementById('rich-editor').focus();
+      document.execCommand('createLink', false, url);
+    }
+  }
+
+  // ── Priority selector ─────────────────────────────────────────
+  function buildPrioritySelector(current = 'none') {
+    return `
+      <div class="priority-selector" id="priority-selector">
+        <div class="priority-opt ${current==='none'?'selected-none':''}" onclick="selectPriority('none',this)">— None</div>
+        <div class="priority-opt ${current==='important'?'selected-important':''}" onclick="selectPriority('important',this)">⚠ Important</div>
+        <div class="priority-opt ${current==='very_important'?'selected-very':''}" onclick="selectPriority('very_important',this)">🔴 Very Important</div>
+      </div>`;
+  }
+
+  let _currentPriority = 'none';
+  function selectPriority(val, el) {
+    _currentPriority = val;
+    document.querySelectorAll('.priority-opt').forEach(o => o.className = 'priority-opt');
+    if (val === 'none') el.classList.add('selected-none');
+    if (val === 'important') el.classList.add('selected-important');
+    if (val === 'very_important') el.classList.add('selected-very');
   }
 
   // ── Modal ─────────────────────────────────────────────────────
-  function openModal(type, idx = null, sectionId = null) {
+  function openModal(type, idx=null, sectionId=null) {
     editingModal = { type, idx, sectionId };
     const title = document.getElementById('modal-title');
     const body  = document.getElementById('modal-body');
-    const arr   = type === 'link' ? 'links' : type === 'deadline' ? 'deadlines' : type === 'section' ? 'sections' : 'stories';
-    const data  = idx !== null ? state[arr][idx] : {};
+    const arr   = type==='link'?'links':type==='deadline'?'deadlines':type==='section'?'sections':'stories';
+    const data  = idx!==null ? state[arr][idx] : {};
 
     if (type === 'link') {
-      title.textContent = idx !== null ? 'Edit quick link' : 'Add quick link';
+      title.textContent = idx!==null?'Edit quick link':'Add quick link';
       body.innerHTML = `
         <label>Emoji (optional)</label><input type="text" id="m-emoji" value="${esc(data.emoji||'')}" placeholder="🍽️">
         <label>Label</label><input type="text" id="m-label" value="${esc(data.label||'')}" placeholder="Dining Hall Menu">
@@ -460,31 +624,33 @@
       document.getElementById('modal-save').onclick = saveLink;
 
     } else if (type === 'deadline') {
-      title.textContent = idx !== null ? 'Edit deadline' : 'Add deadline';
+      title.textContent = idx!==null?'Edit deadline':'Add deadline';
       body.innerHTML = `
         <label>Date label</label><input type="text" id="m-date" value="${esc(data.date_label||'')}" placeholder="Today · May 7">
         <label>Title</label><input type="text" id="m-title" value="${esc(data.title||'')}" placeholder="Advisor Change Form due by 3 PM">`;
       document.getElementById('modal-save').onclick = saveDeadline;
 
     } else if (type === 'section') {
-      title.textContent = idx !== null ? 'Edit section' : 'Add section';
+      title.textContent = idx!==null?'Edit section':'Add section';
       body.innerHTML = `
         <label>Section name</label><input type="text" id="m-sname" value="${esc(data.name||'')}" placeholder="All school">`;
       document.getElementById('modal-save').onclick = saveSection;
 
     } else if (type === 'story') {
-      title.textContent = idx !== null ? 'Edit story' : 'Add story';
+      title.textContent = idx!==null?'Edit story':'Add story';
+      _currentPriority = data.priority || 'none';
       const secOpts = state.sections.map(s =>
-        `<option value="${s.id}" ${(data.section_id===s.id || sectionId===s.id) ? 'selected' : ''}>${esc(s.name)}</option>`
+        `<option value="${s.id}" ${(data.section_id===s.id||sectionId===s.id)?'selected':''}>${esc(s.name)}</option>`
       ).join('');
       body.innerHTML = `
         <label>Section</label><select id="m-secid">${secOpts}</select>
         <label>Title</label><input type="text" id="m-stitle" value="${esc(data.title||'')}" placeholder="Story headline">
         <label>Preview line (shown collapsed)</label><input type="text" id="m-spreview" value="${esc(data.preview||'')}" placeholder="Date · Location · Key detail">
         <label>Badge (optional, e.g. "Tonight")</label><input type="text" id="m-sbadge" value="${esc(data.badge||'')}" placeholder="Tonight">
-        <label>Body HTML</label>
-        <textarea id="m-sbody" rows="8">${data.body_html ? data.body_html.replace(/</g,'&lt;') : ''}</textarea>
-        <p style="font-size:11px;color:var(--muted);margin-top:6px">Use &lt;p&gt; for paragraphs, &lt;ul&gt;&lt;li&gt; for bullets, &lt;strong&gt; for bold, &lt;a href="…"&gt; for links.</p>`;
+        <label>Priority</label>
+        ${buildPrioritySelector(_currentPriority)}
+        <label style="margin-top:14px">Story body</label>
+        ${buildRichEditor(data.body_html||'')}`;
       document.getElementById('modal-save').onclick = saveStory;
     }
 
@@ -492,48 +658,49 @@
   }
 
   function closeModal()      { document.getElementById('modal-overlay').classList.remove('open'); }
-  function closeModalOnBg(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+  function closeModalOnBg(e) { if(e.target===document.getElementById('modal-overlay')) closeModal(); }
 
   function saveLink() {
     const obj = { emoji: v('m-emoji'), label: v('m-label'), url: v('m-url') };
-    if (!obj.label || !obj.url) return alert('Label and URL are required.');
-    if (editingModal.idx !== null) Object.assign(state.links[editingModal.idx], obj);
+    if (!obj.label||!obj.url) return alert('Label and URL are required.');
+    if (editingModal.idx!==null) Object.assign(state.links[editingModal.idx], obj);
     else state.links.push(obj);
-    closeModal(); renderAll();
+    closeModal(); renderAll(); renderPreview();
   }
   function saveDeadline() {
     const obj = { date_label: v('m-date'), title: v('m-title') };
     if (!obj.title) return alert('Title is required.');
-    if (editingModal.idx !== null) Object.assign(state.deadlines[editingModal.idx], obj);
+    if (editingModal.idx!==null) Object.assign(state.deadlines[editingModal.idx], obj);
     else state.deadlines.push(obj);
-    closeModal(); renderAll();
+    closeModal(); renderAll(); renderPreview();
   }
   function saveSection() {
     const obj = { name: v('m-sname') };
     if (!obj.name) return alert('Name is required.');
-    if (editingModal.idx !== null) Object.assign(state.sections[editingModal.idx], obj);
-    else state.sections.push({ ...obj, id: 'sec_' + Date.now() });
-    closeModal(); renderAll();
+    if (editingModal.idx!==null) Object.assign(state.sections[editingModal.idx], obj);
+    else state.sections.push({ ...obj, id:'sec_'+Date.now() });
+    closeModal(); renderAll(); renderPreview();
   }
   function saveStory() {
-    const rawBody = document.getElementById('m-sbody').value;
+    const editor = document.getElementById('rich-editor');
     const obj = {
       section_id: v('m-secid'),
       title:      v('m-stitle'),
       preview:    v('m-spreview'),
       badge:      v('m-sbadge'),
-      body_html:  rawBody.replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
+      priority:   _currentPriority === 'none' ? null : _currentPriority,
+      body_html:  editor ? editor.innerHTML : '',
     };
     if (!obj.title) return alert('Title is required.');
-    if (editingModal.idx !== null) Object.assign(state.stories[editingModal.idx], obj);
+    if (editingModal.idx!==null) Object.assign(state.stories[editingModal.idx], obj);
     else state.stories.push(obj);
-    closeModal(); renderAll();
+    closeModal(); renderAll(); renderPreview();
   }
 
   // ── Utilities ─────────────────────────────────────────────────
-  function v(id)  { return document.getElementById(id)?.value.trim() || ''; }
+  function v(id)  { return document.getElementById(id)?.value.trim()||''; }
   function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function showToast(msg, isError = false) {
+  function showToast(msg, isError=false) {
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.className = isError ? 'error' : '';
