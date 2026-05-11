@@ -6,7 +6,7 @@
 <title>The Voice — Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<!-- Identity widget intentionally NOT here — loaded at bottom of body -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --red:#c0392b;--red-light:#f9eeec;--bg:#f4f1ed;--card:#fff;
@@ -23,6 +23,12 @@
   .login-title{font-size:22px;font-weight:600;color:var(--red);margin-bottom:4px}
   .login-sub{font-size:13px;color:var(--muted);margin-bottom:28px}
   .login-note{font-size:12px;color:var(--light);margin-top:16px}
+  .login-form{text-align:left;margin-bottom:16px}
+  .login-form label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:4px;margin-top:14px}
+  .login-form label:first-child{margin-top:0}
+  .login-form input{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--font);outline:none;transition:border-color .15s;background:white;color:var(--text)}
+  .login-form input:focus{border-color:var(--red)}
+  .login-error{font-size:12px;color:var(--red);margin-top:10px;min-height:18px}
 
   /* BUTTONS */
   .btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:8px;padding:8px 16px;font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .15s,background .15s}
@@ -94,8 +100,6 @@
 
   /* SAVE BAR */
   .save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:12px 24px;display:flex;justify-content:center;gap:12px;z-index:60;box-shadow:0 -4px 16px rgba(0,0,0,.06)}
-
-  .user-badge{font-size:12px;color:var(--muted);background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:4px 12px}
 </style>
 </head>
 <body>
@@ -109,8 +113,15 @@
     </svg>
     <div class="login-title">The Voice</div>
     <div class="login-sub">Admin Panel · The Pennington School</div>
-    <button class="btn btn-primary" style="width:100%" onclick="netlifyIdentity.open()">Sign in with your school account</button>
-    <p class="login-note">Access is restricted to invited admins only.<br>Contact your site administrator to request access.</p>
+    <div class="login-form">
+      <label>Email</label>
+      <input type="text" id="login-email" placeholder="you@pennington.org" autocomplete="email">
+      <label>Password</label>
+      <input type="text" id="login-password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="login()">Sign in</button>
+    <div class="login-error" id="login-error"></div>
+    <p class="login-note">Access is restricted to invited admins only.</p>
   </div>
 </div>
 
@@ -218,328 +229,317 @@
 
 <div id="toast"></div>
 
-<!-- Identity widget loaded LAST so page is fully ready before it fires -->
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
 <script>
-// ── ONLY PUBLIC CONFIG HERE — no secrets ─────────────────────
-const SUPABASE_URL      = 'https://fcrghpinecvnxfcgfbbx.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjcmdocGluZWN2bnhmY2dmYmJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNzE2MjAsImV4cCI6MjA5Mzg0NzYyMH0.yRKPTYGSMet0e0HBKatI7cQ1JkdObt386b7uz3MRM_I';
-// ─────────────────────────────────────────────────────────────
+  // ── Config ────────────────────────────────────────────────────
+  const SUPABASE_URL      = 'https://fcrghpinecvnxfcgfbbx.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjcmdocGluZWN2bnhmY2dmYmJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNzE2MjAsImV4cCI6MjA5Mzg0NzYyMH0.yRKPTYGSMet0e0HBKatI7cQ1JkdObt386b7uz3MRM_I';
 
-let currentUser = null;
-let state = { issue:{}, alert:{}, links:[], deadlines:[], sections:[], stories:[] };
-let editingModal = null;
+  const { createClient } = window.supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ── NETLIFY IDENTITY ─────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
+  let currentUser = null;
+  let state = { issue:{}, alert:{}, links:[], deadlines:[], sections:[], stories:[] };
+  let editingModal = null;
 
-  // If this is a password recovery link, go to the dedicated page
-  if (window.location.hash && window.location.hash.includes('recovery_token')) {
-    window.location.replace('password.html' + window.location.hash);
-    return;
-  }
-
-  netlifyIdentity.on('login', user => {
-    currentUser = user;
-    netlifyIdentity.close();
-    showAdmin();
-    loadAll();
-  });
-
-  netlifyIdentity.on('logout', () => {
-    currentUser = null;
-    document.getElementById('admin-screen').style.display = 'none';
-    document.getElementById('login-screen').style.display = 'flex';
-  });
-
-  netlifyIdentity.on('init', user => {
-    if (user) {
-      currentUser = user;
+  // ── Auth ──────────────────────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      currentUser = session.user;
       showAdmin();
       loadAll();
     }
   });
 
-  netlifyIdentity.init({
-    APIUrl: 'https://magenta-trifle-11a430.netlify.app/.netlify/identity'
-  });
-});
+  async function login() {
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const errEl    = document.getElementById('login-error');
+    errEl.textContent = '';
 
-function showAdmin() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('admin-screen').style.display = 'block';
-  document.getElementById('user-email').textContent = currentUser?.email || '';
-}
-function logout() { netlifyIdentity.logout(); }
-
-// ── API HELPERS ───────────────────────────────────────────────
-async function dbGet(table, qs = '') {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${qs}`, {
-    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
-  });
-  return r.json();
-}
-
-async function dbWrite(action, table, payload) {
-  const token = currentUser?.token?.access_token;
-  if (!token) throw new Error('Not logged in');
-  const r = await fetch('/api/update', {
-    method: 'POST',
-    headers: {
-      'Content-Type':  'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify({ action, table, ...payload }),
-  });
-  const data = await r.json();
-  if (!r.ok) throw new Error(data.error || 'Server error');
-  return data;
-}
-
-async function dbUpsert(table, rows) {
-  if (!rows.length) return;
-  return dbWrite('upsert', table, { rows });
-}
-async function dbDelete(table, id) {
-  return dbWrite('delete', table, { id });
-}
-
-// ── LOAD ──────────────────────────────────────────────────────
-async function loadAll() {
-  try {
-    const [issue, alert, links, deadlines, sections, stories] = await Promise.all([
-      dbGet('issue',       'select=*&order=id.desc&limit=1'),
-      dbGet('alert',       'select=*&limit=1'),
-      dbGet('quick_links', 'select=*&order=sort_order'),
-      dbGet('deadlines',   'select=*&order=sort_order'),
-      dbGet('sections',    'select=*&order=sort_order'),
-      dbGet('stories',     'select=*&order=sort_order'),
-    ]);
-    state.issue     = issue[0]    || {};
-    state.alert     = alert[0]    || { enabled: false, text: '' };
-    state.links     = links       || [];
-    state.deadlines = deadlines   || [];
-    state.sections  = sections    || [];
-    state.stories   = stories     || [];
-    renderAll();
-  } catch (e) {
-    showToast('Failed to load data', true);
-    console.error(e);
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      errEl.textContent = error.message;
+      return;
+    }
+    currentUser = data.user;
+    showAdmin();
+    loadAll();
   }
-}
 
-// ── RENDER ────────────────────────────────────────────────────
-function renderAll() {
-  document.getElementById('iss-date').value     = state.issue.issue_date   || '';
-  document.getElementById('iss-day').value      = state.issue.day_label    || '';
-  document.getElementById('iss-rotation').value = state.issue.rotation_day || '';
-  document.getElementById('alert-enabled').checked = !!state.alert.enabled;
-  document.getElementById('alert-text').value       = state.alert.text || '';
+  async function logout() {
+    await sb.auth.signOut();
+    currentUser = null;
+    document.getElementById('admin-screen').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  }
 
-  const ll = document.getElementById('links-list');
-  ll.innerHTML = state.links.length
-    ? state.links.map((l, i) => `
-      <div class="list-item">
-        <div class="list-item-body">
-          <div class="list-item-title">${esc(l.emoji || '')} ${esc(l.label)}</div>
-          <div class="list-item-sub">${esc(l.url)}</div>
-        </div>
-        <div class="list-item-actions">
-          <button class="btn-icon" onclick="openModal('link',${i})">✏️</button>
-          <button class="btn-icon" onclick="removeItem('links',${i})">🗑️</button>
-        </div>
-      </div>`).join('')
-    : '<div class="empty-state">No links yet.</div>';
+  function showAdmin() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    document.getElementById('user-email').textContent = currentUser?.email || '';
+  }
 
-  const dl = document.getElementById('deadlines-list');
-  dl.innerHTML = state.deadlines.length
-    ? state.deadlines.map((d, i) => `
-      <div class="list-item">
-        <div class="list-item-body">
-          <div class="list-item-title">${esc(d.title)}</div>
-          <div class="list-item-sub">${esc(d.date_label)}</div>
-        </div>
-        <div class="list-item-actions">
-          <button class="btn-icon" onclick="openModal('deadline',${i})">✏️</button>
-          <button class="btn-icon" onclick="removeItem('deadlines',${i})">🗑️</button>
-        </div>
-      </div>`).join('')
-    : '<div class="empty-state">No deadlines yet.</div>';
+  // Allow pressing Enter to log in
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') {
+      login();
+    }
+  });
 
-  const sl = document.getElementById('sections-list');
-  sl.innerHTML = state.sections.length
-    ? state.sections.map((sec, si) => {
-        const ss = state.stories.filter(s => s.section_id === sec.id);
-        return `<div class="section-item">
-          <div class="section-item-header">
-            <span class="section-name">${esc(sec.name)}</span>
-            <span class="section-stories-count">${ss.length} stor${ss.length === 1 ? 'y' : 'ies'}</span>
-            <button class="btn btn-secondary btn-sm" onclick="openModal('story',null,'${sec.id}')">+ Story</button>
-            <button class="btn-icon" onclick="openModal('section',${si})">✏️</button>
-            <button class="btn-icon" onclick="removeItem('sections',${si})">🗑️</button>
+  // ── API Helpers ───────────────────────────────────────────────
+  async function dbGet(table, qs = '') {
+    const { data, error } = await sb.from(table).select('*');
+    if (error) throw error;
+    return data;
+  }
+
+  async function dbUpsert(table, rows) {
+    if (!rows.length) return;
+    const { error } = await sb.from(table).upsert(rows);
+    if (error) throw error;
+  }
+
+  async function dbDelete(table, id) {
+    const { error } = await sb.from(table).delete().eq('id', id);
+    if (error) throw error;
+  }
+
+  // ── Load ──────────────────────────────────────────────────────
+  async function loadAll() {
+    try {
+      const [issue, alert, links, deadlines, sections, stories] = await Promise.all([
+        sb.from('issue').select('*').order('id', { ascending: false }).limit(1),
+        sb.from('alert').select('*').limit(1),
+        sb.from('quick_links').select('*').order('sort_order'),
+        sb.from('deadlines').select('*').order('sort_order'),
+        sb.from('sections').select('*').order('sort_order'),
+        sb.from('stories').select('*').order('sort_order'),
+      ]);
+      state.issue     = issue.data[0]     || {};
+      state.alert     = alert.data[0]     || { enabled: false, text: '' };
+      state.links     = links.data        || [];
+      state.deadlines = deadlines.data    || [];
+      state.sections  = sections.data     || [];
+      state.stories   = stories.data      || [];
+      renderAll();
+    } catch (e) {
+      showToast('Failed to load data', true);
+      console.error(e);
+    }
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  function renderAll() {
+    document.getElementById('iss-date').value     = state.issue.issue_date   || '';
+    document.getElementById('iss-day').value      = state.issue.day_label    || '';
+    document.getElementById('iss-rotation').value = state.issue.rotation_day || '';
+    document.getElementById('alert-enabled').checked = !!state.alert.enabled;
+    document.getElementById('alert-text').value       = state.alert.text || '';
+
+    const ll = document.getElementById('links-list');
+    ll.innerHTML = state.links.length
+      ? state.links.map((l, i) => `
+        <div class="list-item">
+          <div class="list-item-body">
+            <div class="list-item-title">${esc(l.emoji || '')} ${esc(l.label)}</div>
+            <div class="list-item-sub">${esc(l.url)}</div>
           </div>
-          ${ss.map(s => `
-            <div class="list-item" style="margin-top:8px">
-              <div class="list-item-body">
-                <div class="list-item-title">${esc(s.title)}</div>
-                <div class="list-item-sub">${esc(s.preview || '')}</div>
-              </div>
-              <div class="list-item-actions">
-                <button class="btn-icon" onclick="openModal('story',${storyIdx(s.id)})">✏️</button>
-                <button class="btn-icon" onclick="removeItem('stories',${storyIdx(s.id)})">🗑️</button>
-              </div>
-            </div>`).join('')}
-        </div>`;
-      }).join('')
-    : '<div class="empty-state">No sections yet.</div>';
-}
+          <div class="list-item-actions">
+            <button class="btn-icon" onclick="openModal('link',${i})">✏️</button>
+            <button class="btn-icon" onclick="removeItem('links',${i})">🗑️</button>
+          </div>
+        </div>`).join('')
+      : '<div class="empty-state">No links yet.</div>';
 
-function storyIdx(id) { return state.stories.findIndex(s => s.id === id); }
+    const dl = document.getElementById('deadlines-list');
+    dl.innerHTML = state.deadlines.length
+      ? state.deadlines.map((d, i) => `
+        <div class="list-item">
+          <div class="list-item-body">
+            <div class="list-item-title">${esc(d.title)}</div>
+            <div class="list-item-sub">${esc(d.date_label)}</div>
+          </div>
+          <div class="list-item-actions">
+            <button class="btn-icon" onclick="openModal('deadline',${i})">✏️</button>
+            <button class="btn-icon" onclick="removeItem('deadlines',${i})">🗑️</button>
+          </div>
+        </div>`).join('')
+      : '<div class="empty-state">No deadlines yet.</div>';
 
-// ── SAVE ALL ──────────────────────────────────────────────────
-async function saveAll() {
-  const btn = document.getElementById('save-btn');
-  btn.textContent = 'Saving…';
-  btn.disabled = true;
-
-  state.issue.issue_date   = document.getElementById('iss-date').value;
-  state.issue.day_label    = document.getElementById('iss-day').value;
-  state.issue.rotation_day = document.getElementById('iss-rotation').value;
-  state.alert.enabled      = document.getElementById('alert-enabled').checked;
-  state.alert.text         = document.getElementById('alert-text').value;
-
-  state.links.forEach((l, i)     => l.sort_order = i);
-  state.deadlines.forEach((d, i) => d.sort_order = i);
-  state.sections.forEach((s, i)  => s.sort_order = i);
-  state.stories.forEach((s, i)   => s.sort_order = i);
-
-  try {
-    await Promise.all([
-      dbUpsert('issue',       [state.issue]),
-      dbUpsert('alert',       [state.alert]),
-      dbUpsert('quick_links', state.links),
-      dbUpsert('deadlines',   state.deadlines),
-      dbUpsert('sections',    state.sections),
-      dbUpsert('stories',     state.stories),
-    ]);
-    showToast('All changes saved ✓');
-  } catch (e) {
-    showToast('Save failed — check console', true);
-    console.error(e);
-  } finally {
-    btn.textContent = 'Save all changes';
-    btn.disabled = false;
-  }
-}
-
-// ── REMOVE ────────────────────────────────────────────────────
-async function removeItem(type, idx) {
-  const arr  = state[type];
-  const item = arr[idx];
-  const dbTable = type === 'links' ? 'quick_links' : type;
-  if (item?.id) await dbDelete(dbTable, item.id);
-  arr.splice(idx, 1);
-  renderAll();
-}
-
-// ── MODAL ─────────────────────────────────────────────────────
-function openModal(type, idx = null, sectionId = null) {
-  editingModal = { type, idx, sectionId };
-  const title = document.getElementById('modal-title');
-  const body  = document.getElementById('modal-body');
-  const arr   = type === 'link' ? 'links' : type === 'deadline' ? 'deadlines' : type === 'section' ? 'sections' : 'stories';
-  const data  = idx !== null ? state[arr][idx] : {};
-
-  if (type === 'link') {
-    title.textContent = idx !== null ? 'Edit quick link' : 'Add quick link';
-    body.innerHTML = `
-      <label>Emoji (optional)</label><input type="text" id="m-emoji" value="${esc(data.emoji||'')}" placeholder="🍽️">
-      <label>Label</label><input type="text" id="m-label" value="${esc(data.label||'')}" placeholder="Dining Hall Menu">
-      <label>URL</label><input type="text" id="m-url" value="${esc(data.url||'')}" placeholder="https://…">`;
-    document.getElementById('modal-save').onclick = saveLink;
-
-  } else if (type === 'deadline') {
-    title.textContent = idx !== null ? 'Edit deadline' : 'Add deadline';
-    body.innerHTML = `
-      <label>Date label</label><input type="text" id="m-date" value="${esc(data.date_label||'')}" placeholder="Today · May 7">
-      <label>Title</label><input type="text" id="m-title" value="${esc(data.title||'')}" placeholder="Advisor Change Form due by 3 PM">`;
-    document.getElementById('modal-save').onclick = saveDeadline;
-
-  } else if (type === 'section') {
-    title.textContent = idx !== null ? 'Edit section' : 'Add section';
-    body.innerHTML = `
-      <label>Section name</label><input type="text" id="m-sname" value="${esc(data.name||'')}" placeholder="All school">`;
-    document.getElementById('modal-save').onclick = saveSection;
-
-  } else if (type === 'story') {
-    title.textContent = idx !== null ? 'Edit story' : 'Add story';
-    const secOpts = state.sections.map(s =>
-      `<option value="${s.id}" ${(data.section_id===s.id || sectionId===s.id) ? 'selected' : ''}>${esc(s.name)}</option>`
-    ).join('');
-    body.innerHTML = `
-      <label>Section</label><select id="m-secid">${secOpts}</select>
-      <label>Title</label><input type="text" id="m-stitle" value="${esc(data.title||'')}" placeholder="Story headline">
-      <label>Preview line (shown collapsed)</label><input type="text" id="m-spreview" value="${esc(data.preview||'')}" placeholder="Date · Location · Key detail">
-      <label>Badge (optional, e.g. "Tonight")</label><input type="text" id="m-sbadge" value="${esc(data.badge||'')}" placeholder="Tonight">
-      <label>Body HTML</label>
-      <textarea id="m-sbody" rows="8">${data.body_html ? data.body_html.replace(/</g,'&lt;') : ''}</textarea>
-      <p style="font-size:11px;color:var(--muted);margin-top:6px">Use &lt;p&gt; for paragraphs, &lt;ul&gt;&lt;li&gt; for bullets, &lt;strong&gt; for bold, &lt;a href="…"&gt; for links.</p>`;
-    document.getElementById('modal-save').onclick = saveStory;
+    const sl = document.getElementById('sections-list');
+    sl.innerHTML = state.sections.length
+      ? state.sections.map((sec, si) => {
+          const ss = state.stories.filter(s => s.section_id === sec.id);
+          return `<div class="section-item">
+            <div class="section-item-header">
+              <span class="section-name">${esc(sec.name)}</span>
+              <span class="section-stories-count">${ss.length} stor${ss.length === 1 ? 'y' : 'ies'}</span>
+              <button class="btn btn-secondary btn-sm" onclick="openModal('story',null,'${sec.id}')">+ Story</button>
+              <button class="btn-icon" onclick="openModal('section',${si})">✏️</button>
+              <button class="btn-icon" onclick="removeItem('sections',${si})">🗑️</button>
+            </div>
+            ${ss.map(s => `
+              <div class="list-item" style="margin-top:8px">
+                <div class="list-item-body">
+                  <div class="list-item-title">${esc(s.title)}</div>
+                  <div class="list-item-sub">${esc(s.preview || '')}</div>
+                </div>
+                <div class="list-item-actions">
+                  <button class="btn-icon" onclick="openModal('story',${storyIdx(s.id)})">✏️</button>
+                  <button class="btn-icon" onclick="removeItem('stories',${storyIdx(s.id)})">🗑️</button>
+                </div>
+              </div>`).join('')}
+          </div>`;
+        }).join('')
+      : '<div class="empty-state">No sections yet.</div>';
   }
 
-  document.getElementById('modal-overlay').classList.add('open');
-}
+  function storyIdx(id) { return state.stories.findIndex(s => s.id === id); }
 
-function closeModal()        { document.getElementById('modal-overlay').classList.remove('open'); }
-function closeModalOnBg(e)   { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+  // ── Save All ──────────────────────────────────────────────────
+  async function saveAll() {
+    const btn = document.getElementById('save-btn');
+    btn.textContent = 'Saving…';
+    btn.disabled = true;
 
-function saveLink() {
-  const obj = { emoji: v('m-emoji'), label: v('m-label'), url: v('m-url') };
-  if (!obj.label || !obj.url) return alert('Label and URL are required.');
-  if (editingModal.idx !== null) Object.assign(state.links[editingModal.idx], obj);
-  else state.links.push(obj);
-  closeModal(); renderAll();
-}
-function saveDeadline() {
-  const obj = { date_label: v('m-date'), title: v('m-title') };
-  if (!obj.title) return alert('Title is required.');
-  if (editingModal.idx !== null) Object.assign(state.deadlines[editingModal.idx], obj);
-  else state.deadlines.push(obj);
-  closeModal(); renderAll();
-}
-function saveSection() {
-  const obj = { name: v('m-sname') };
-  if (!obj.name) return alert('Name is required.');
-  if (editingModal.idx !== null) Object.assign(state.sections[editingModal.idx], obj);
-  else state.sections.push({ ...obj, id: 'sec_' + Date.now() });
-  closeModal(); renderAll();
-}
-function saveStory() {
-  const rawBody = document.getElementById('m-sbody').value;
-  const obj = {
-    section_id: v('m-secid'),
-    title:      v('m-stitle'),
-    preview:    v('m-spreview'),
-    badge:      v('m-sbadge'),
-    body_html:  rawBody.replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
-  };
-  if (!obj.title) return alert('Title is required.');
-  if (editingModal.idx !== null) Object.assign(state.stories[editingModal.idx], obj);
-  else state.stories.push(obj);
-  closeModal(); renderAll();
-}
+    state.issue.issue_date   = document.getElementById('iss-date').value;
+    state.issue.day_label    = document.getElementById('iss-day').value;
+    state.issue.rotation_day = document.getElementById('iss-rotation').value;
+    state.alert.enabled      = document.getElementById('alert-enabled').checked;
+    state.alert.text         = document.getElementById('alert-text').value;
 
-// ── UTILITIES ─────────────────────────────────────────────────
-function v(id)  { return document.getElementById(id)?.value.trim() || ''; }
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function showToast(msg, isError = false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = isError ? 'error' : '';
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
+    state.links.forEach((l, i)     => l.sort_order = i);
+    state.deadlines.forEach((d, i) => d.sort_order = i);
+    state.sections.forEach((s, i)  => s.sort_order = i);
+    state.stories.forEach((s, i)   => s.sort_order = i);
+
+    try {
+      await Promise.all([
+        dbUpsert('issue',       [state.issue]),
+        dbUpsert('alert',       [state.alert]),
+        dbUpsert('quick_links', state.links),
+        dbUpsert('deadlines',   state.deadlines),
+        dbUpsert('sections',    state.sections),
+        dbUpsert('stories',     state.stories),
+      ]);
+      showToast('All changes saved ✓');
+    } catch (e) {
+      showToast('Save failed — check console', true);
+      console.error(e);
+    } finally {
+      btn.textContent = 'Save all changes';
+      btn.disabled = false;
+    }
+  }
+
+  // ── Remove ────────────────────────────────────────────────────
+  async function removeItem(type, idx) {
+    const arr  = state[type];
+    const item = arr[idx];
+    const dbTable = type === 'links' ? 'quick_links' : type;
+    if (item?.id) await dbDelete(dbTable, item.id);
+    arr.splice(idx, 1);
+    renderAll();
+  }
+
+  // ── Modal ─────────────────────────────────────────────────────
+  function openModal(type, idx = null, sectionId = null) {
+    editingModal = { type, idx, sectionId };
+    const title = document.getElementById('modal-title');
+    const body  = document.getElementById('modal-body');
+    const arr   = type === 'link' ? 'links' : type === 'deadline' ? 'deadlines' : type === 'section' ? 'sections' : 'stories';
+    const data  = idx !== null ? state[arr][idx] : {};
+
+    if (type === 'link') {
+      title.textContent = idx !== null ? 'Edit quick link' : 'Add quick link';
+      body.innerHTML = `
+        <label>Emoji (optional)</label><input type="text" id="m-emoji" value="${esc(data.emoji||'')}" placeholder="🍽️">
+        <label>Label</label><input type="text" id="m-label" value="${esc(data.label||'')}" placeholder="Dining Hall Menu">
+        <label>URL</label><input type="text" id="m-url" value="${esc(data.url||'')}" placeholder="https://…">`;
+      document.getElementById('modal-save').onclick = saveLink;
+
+    } else if (type === 'deadline') {
+      title.textContent = idx !== null ? 'Edit deadline' : 'Add deadline';
+      body.innerHTML = `
+        <label>Date label</label><input type="text" id="m-date" value="${esc(data.date_label||'')}" placeholder="Today · May 7">
+        <label>Title</label><input type="text" id="m-title" value="${esc(data.title||'')}" placeholder="Advisor Change Form due by 3 PM">`;
+      document.getElementById('modal-save').onclick = saveDeadline;
+
+    } else if (type === 'section') {
+      title.textContent = idx !== null ? 'Edit section' : 'Add section';
+      body.innerHTML = `
+        <label>Section name</label><input type="text" id="m-sname" value="${esc(data.name||'')}" placeholder="All school">`;
+      document.getElementById('modal-save').onclick = saveSection;
+
+    } else if (type === 'story') {
+      title.textContent = idx !== null ? 'Edit story' : 'Add story';
+      const secOpts = state.sections.map(s =>
+        `<option value="${s.id}" ${(data.section_id===s.id || sectionId===s.id) ? 'selected' : ''}>${esc(s.name)}</option>`
+      ).join('');
+      body.innerHTML = `
+        <label>Section</label><select id="m-secid">${secOpts}</select>
+        <label>Title</label><input type="text" id="m-stitle" value="${esc(data.title||'')}" placeholder="Story headline">
+        <label>Preview line (shown collapsed)</label><input type="text" id="m-spreview" value="${esc(data.preview||'')}" placeholder="Date · Location · Key detail">
+        <label>Badge (optional, e.g. "Tonight")</label><input type="text" id="m-sbadge" value="${esc(data.badge||'')}" placeholder="Tonight">
+        <label>Body HTML</label>
+        <textarea id="m-sbody" rows="8">${data.body_html ? data.body_html.replace(/</g,'&lt;') : ''}</textarea>
+        <p style="font-size:11px;color:var(--muted);margin-top:6px">Use &lt;p&gt; for paragraphs, &lt;ul&gt;&lt;li&gt; for bullets, &lt;strong&gt; for bold, &lt;a href="…"&gt; for links.</p>`;
+      document.getElementById('modal-save').onclick = saveStory;
+    }
+
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function closeModal()      { document.getElementById('modal-overlay').classList.remove('open'); }
+  function closeModalOnBg(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+
+  function saveLink() {
+    const obj = { emoji: v('m-emoji'), label: v('m-label'), url: v('m-url') };
+    if (!obj.label || !obj.url) return alert('Label and URL are required.');
+    if (editingModal.idx !== null) Object.assign(state.links[editingModal.idx], obj);
+    else state.links.push(obj);
+    closeModal(); renderAll();
+  }
+  function saveDeadline() {
+    const obj = { date_label: v('m-date'), title: v('m-title') };
+    if (!obj.title) return alert('Title is required.');
+    if (editingModal.idx !== null) Object.assign(state.deadlines[editingModal.idx], obj);
+    else state.deadlines.push(obj);
+    closeModal(); renderAll();
+  }
+  function saveSection() {
+    const obj = { name: v('m-sname') };
+    if (!obj.name) return alert('Name is required.');
+    if (editingModal.idx !== null) Object.assign(state.sections[editingModal.idx], obj);
+    else state.sections.push({ ...obj, id: 'sec_' + Date.now() });
+    closeModal(); renderAll();
+  }
+  function saveStory() {
+    const rawBody = document.getElementById('m-sbody').value;
+    const obj = {
+      section_id: v('m-secid'),
+      title:      v('m-stitle'),
+      preview:    v('m-spreview'),
+      badge:      v('m-sbadge'),
+      body_html:  rawBody.replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
+    };
+    if (!obj.title) return alert('Title is required.');
+    if (editingModal.idx !== null) Object.assign(state.stories[editingModal.idx], obj);
+    else state.stories.push(obj);
+    closeModal(); renderAll();
+  }
+
+  // ── Utilities ─────────────────────────────────────────────────
+  function v(id)  { return document.getElementById(id)?.value.trim() || ''; }
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = isError ? 'error' : '';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
 </script>
 </body>
 </html>
