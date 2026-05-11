@@ -357,12 +357,16 @@
   // ── DB ────────────────────────────────────────────────────────
   async function dbUpsert(table, rows) {
     if (!rows.length) return;
-    const cleaned = rows.map(r => {
-      if (!r.id) { const { id, ...rest } = r; return rest; }
-      return r;
-    });
-    const { error } = await sb.from(table).upsert(cleaned);
-    if (error) throw error;
+    const existing = rows.filter(r => r.id);
+    const newRows  = rows.filter(r => !r.id).map(({ id, ...rest }) => rest);
+    if (existing.length) {
+      const { error } = await sb.from(table).upsert(existing);
+      if (error) throw error;
+    }
+    if (newRows.length) {
+      const { error } = await sb.from(table).insert(newRows);
+      if (error) throw error;
+    }
   }
   async function dbDelete(table, id) {
     const { error } = await sb.from(table).delete().eq('id', id);
