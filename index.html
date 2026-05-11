@@ -412,9 +412,13 @@
   let _pollOptions = [];
   let _pollCollapsed = false;
 
-  // localStorage key includes both poll id AND version so a vote-clear forces re-vote
+  // localStorage key includes both poll id AND version so a vote-clear forces re-vote.
+  // The stored value is the inserted row id (string), so we can delete it on change.
   function pollStorageKey() {
     return `poll_voted_${_pollId}_v${_pollVersion}`;
+  }
+  function storedRowId() {
+    return localStorage.getItem(pollStorageKey()); // null if not voted, row id string if voted
   }
 
   function togglePoll() {
@@ -455,7 +459,7 @@
       const counts = _pollOptions.map((_, i) => votes.filter(v => v.option_index === i).length);
       const total  = counts.reduce((a, b) => a + b, 0);
 
-      const hasVoted = localStorage.getItem(pollStorageKey());
+      const hasVoted = storedRowId();
       if (hasVoted !== null) {
         renderResults(body, _pollOptions, counts, total, false);
       } else {
@@ -480,34 +484,51 @@
   async function castVote(optionIndex) {
     if (!_pollId) return;
 
-    // Optimistically mark as voted
-    localStorage.setItem(pollStorageKey(), optionIndex);
-
     try {
-      await fetch(`${SUPABASE_URL}/rest/v1/poll_votes`, {
+      // Use return=representation so Supabase gives us back the inserted row with its id
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/poll_votes`, {
         method: 'POST',
         headers: {
           apikey: SUPABASE_ANON_KEY,
           Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json',
-          Prefer: 'return=minimal',
+          Prefer: 'return=representation',
         },
         body: JSON.stringify({ poll_id: _pollId, option_index: optionIndex }),
       });
+      if (res.ok) {
+        const rows = await res.json();
+        const rowId = rows?.[0]?.id;
+        // Store the row id — used to delete this exact vote if user changes their answer
+        if (rowId != null) localStorage.setItem(pollStorageKey(), String(rowId));
+      }
     } catch(e) { console.error('Vote failed', e); }
 
-    // Fetch fresh results and render
     await refreshResults(true);
   }
 
   async function changeVote() {
     if (!_pollId) return;
-    const body = document.getElementById('poll-body');
+    const body  = document.getElementById('poll-body');
+    const rowId = storedRowId();
 
-    // Remove the stored vote from localStorage — user can now vote again
+    // Delete the user's previous vote row from Supabase so it's not counted anymore
+    if (rowId) {
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/poll_votes?id=eq.${encodeURIComponent(rowId)}`, {
+          method: 'DELETE',
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+        });
+      } catch(e) { console.error('Failed to delete old vote', e); }
+    }
+
+    // Clear localStorage so user is no longer considered "voted"
     localStorage.removeItem(pollStorageKey());
 
-    // Fetch current poll question (in case it changed) and re-render voting UI
+    // Re-render voting UI
     try {
       const polls = await api(`poll?select=*&id=eq.${_pollId}`);
       const poll  = polls[0];
