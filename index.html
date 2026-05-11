@@ -49,13 +49,7 @@
     padding: 16px 24px;
     gap: 16px;
   }
-
-  /* Left: Lunch */
-  .masthead-lunch {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
+  .masthead-lunch { display: flex; flex-direction: column; gap: 2px; }
   .masthead-side-label {
     font-family: var(--font-ui);
     font-size: 9px;
@@ -64,26 +58,9 @@
     text-transform: uppercase;
     color: var(--text-light);
   }
-  .masthead-lunch-text {
-    font-family: var(--font-ui);
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.4;
-  }
-
-  /* Center: Title */
-  .masthead-center {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-  .masthead-logo-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .masthead-lunch-text { font-family: var(--font-ui); font-size: 13px; color: var(--text-muted); line-height: 1.4; }
+  .masthead-center { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .masthead-logo-title { display: flex; align-items: center; gap: 12px; }
   .masthead-logo { width: 48px; height: 48px; flex-shrink: 0; }
   .masthead-title {
     font-family: var(--font-head);
@@ -93,202 +70,154 @@
     letter-spacing: -.5px;
     line-height: 1;
   }
-  .masthead-sub {
-    font-family: var(--font-ui);
-    font-size: 10px;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-  .masthead-meta {
-    font-family: var(--font-ui);
-    font-size: 11px;
-    color: var(--text-light);
-  }
-
-  /* Right: Weather */
-  .masthead-weather {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 2px;
-  }
-  .masthead-weather-main {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+  .masthead-sub { font-family: var(--font-ui); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); }
+  .masthead-meta { font-family: var(--font-ui); font-size: 11px; color: var(--text-light); }
+  .masthead-weather { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+  .masthead-weather-main { display: flex; align-items: center; gap: 6px; }
   .weather-icon { font-size: 20px; line-height: 1; }
-  .weather-temp {
-    font-family: var(--font-ui);
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--text);
-    line-height: 1;
-  }
-  .weather-desc {
-    font-family: var(--font-ui);
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-  .weather-day-label {
-    font-family: var(--font-ui);
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: var(--text-light);
-    text-align: right;
-  }
+  .weather-temp { font-family: var(--font-ui); font-size: 22px; font-weight: 500; color: var(--text); line-height: 1; }
+  .weather-desc { font-family: var(--font-ui); font-size: 12px; color: var(--text-muted); }
+  .weather-day-label { font-family: var(--font-ui); font-size: 9px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--text-light); text-align: right; }
 
   /* ── Layout ── */
   .page { max-width: 900px; margin: 0 auto; padding: 32px 24px 64px; }
 
   /* ── Quick Links ── */
-  .quick-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 28px;
-  }
+  .quick-links { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
   .quick-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 5px 14px;
-    font-family: var(--font-ui);
-    font-size: 13px;
-    color: var(--text);
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 5px 14px; font-family: var(--font-ui); font-size: 13px; color: var(--text);
     transition: border-color .15s, background .15s;
   }
   .quick-link:hover { background: var(--red-light); border-color: var(--red); color: var(--red); text-decoration: none; }
 
   /* ── Alert Banner ── */
   .alert-banner {
-    background: var(--red);
-    color: white;
-    border-radius: var(--radius);
-    padding: 12px 18px;
-    font-family: var(--font-ui);
-    font-size: 14px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    background: var(--red); color: white; border-radius: var(--radius);
+    padding: 12px 18px; font-family: var(--font-ui); font-size: 14px;
+    margin-bottom: 24px; display: flex; align-items: center; gap: 10px;
   }
 
   /* ── Section Label ── */
   .section-label {
-    font-family: var(--font-ui);
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: .22em;
-    text-transform: uppercase;
-    color: var(--text-light);
-    margin-bottom: 12px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
+    font-family: var(--font-ui); font-size: 10px; font-weight: 500;
+    letter-spacing: .22em; text-transform: uppercase; color: var(--text-light);
+    margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
   }
 
   /* ── Deadlines ── */
-  .deadlines-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 12px;
-    margin-bottom: 36px;
-  }
-  .deadline-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-left: 4px solid var(--red);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-  }
+  .deadlines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 36px; }
+  .deadline-card { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--red); border-radius: var(--radius); padding: 14px 16px; }
   .deadline-date { font-family: var(--font-ui); font-size: 11px; font-weight: 500; color: var(--red); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
   .deadline-title { font-family: var(--font-body); font-size: 15px; font-weight: 600; line-height: 1.3; }
 
   /* ── Priority badges ── */
-  .priority-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    border-radius: 4px;
-    padding: 2px 8px;
-    font-family: var(--font-ui);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    flex-shrink: 0;
-  }
+  .priority-badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 4px; padding: 2px 8px; font-family: var(--font-ui); font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; flex-shrink: 0; }
   .priority-important { background: #fef3e2; color: var(--priority-important); border: 1px solid #f5cba7; }
   .priority-very-important { background: var(--red-light); color: var(--priority-very-important); border: 1px solid #f1948a; }
 
   /* ── Accordion ── */
   .accordion { margin-bottom: 36px; }
-  .accordion-item {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 8px;
-    overflow: hidden;
-  }
+  .accordion-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; overflow: hidden; }
   .accordion-item.priority-important-item { border-left: 3px solid var(--priority-important); }
   .accordion-item.priority-very-important-item { border-left: 3px solid var(--priority-very-important); }
-
-  .accordion-trigger {
-    width: 100%;
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    gap: 12px;
-    text-align: left;
-  }
+  .accordion-trigger { width: 100%; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; gap: 12px; text-align: left; }
   .accordion-trigger:hover { background: var(--bg); }
   .accordion-trigger-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
   .accordion-trigger-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .accordion-badge {
-    background: var(--red-light);
-    color: var(--red);
-    border-radius: 6px;
-    padding: 3px 10px;
-    font-family: var(--font-ui);
-    font-size: 11px;
-    font-weight: 500;
-    white-space: nowrap;
-  }
+  .accordion-badge { background: var(--red-light); color: var(--red); border-radius: 6px; padding: 3px 10px; font-family: var(--font-ui); font-size: 11px; font-weight: 500; white-space: nowrap; }
   .accordion-title { font-family: var(--font-body); font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.3; }
   .accordion-preview { font-family: var(--font-ui); font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-  .accordion-arrow {
-    width: 20px; height: 20px; border-radius: 50%;
-    background: var(--bg-rule);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    transition: transform .25s, background .15s;
-    font-size: 12px; color: var(--text-muted);
-  }
+  .accordion-arrow { width: 20px; height: 20px; border-radius: 50%; background: var(--bg-rule); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform .25s, background .15s; font-size: 12px; color: var(--text-muted); }
   .accordion-item.open .accordion-arrow { transform: rotate(180deg); background: var(--red-light); color: var(--red); }
   .accordion-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
-  .accordion-body-inner {
-    padding: 0 20px 20px;
-    border-top: 1px solid var(--border);
-    font-size: 15px;
-    line-height: 1.7;
-  }
+  .accordion-body-inner { padding: 0 20px 20px; border-top: 1px solid var(--border); font-size: 15px; line-height: 1.7; }
   .accordion-body-inner p { margin-top: 12px; }
   .accordion-body-inner p:first-child { margin-top: 14px; }
   .accordion-body-inner ul, .accordion-body-inner ol { padding-left: 20px; margin-top: 8px; }
   .accordion-body-inner li { margin-bottom: 6px; }
   .accordion-body-inner h2, .accordion-body-inner h3 { margin-top: 16px; margin-bottom: 4px; font-family: var(--font-head); }
+
+  /* ── Poll widget ── */
+  .poll-widget {
+    position: fixed;
+    bottom: 28px;
+    right: 24px;
+    width: 260px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(44,44,44,.12);
+    z-index: 90;
+    overflow: hidden;
+    transition: transform .25s ease, opacity .25s ease;
+  }
+  .poll-widget.hidden { transform: translateY(calc(100% + 32px)); opacity: 0; pointer-events: none; }
+  .poll-header {
+    background: var(--red);
+    color: white;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+  }
+  .poll-header-left { display: flex; align-items: center; gap: 7px; }
+  .poll-header-label { font-family: var(--font-ui); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+  .poll-toggle-btn { background: rgba(255,255,255,.2); border: none; color: white; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; }
+  .poll-toggle-btn:hover { background: rgba(255,255,255,.35); }
+  .poll-body { padding: 14px; }
+  .poll-question { font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 12px; }
+  .poll-options { display: flex; flex-direction: column; gap: 7px; }
+  .poll-option-btn {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: background .15s, border-color .15s;
+  }
+  .poll-option-btn:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
+
+  /* Results bars */
+  .poll-results { display: flex; flex-direction: column; gap: 8px; }
+  .poll-result-item { display: flex; flex-direction: column; gap: 3px; }
+  .poll-result-label { display: flex; justify-content: space-between; font-family: var(--font-ui); font-size: 12px; color: var(--text-muted); }
+  .poll-result-label .poll-result-pct { font-weight: 600; color: var(--red); }
+  .poll-bar-track { height: 6px; background: var(--bg-rule); border-radius: 3px; overflow: hidden; }
+  .poll-bar-fill { height: 100%; background: var(--red); border-radius: 3px; transition: width .5s ease; }
+  .poll-voted-label { font-family: var(--font-ui); font-size: 11px; color: var(--text-light); text-align: center; margin-top: 10px; }
+  .poll-total { font-family: var(--font-ui); font-size: 11px; color: var(--text-light); text-align: center; margin-top: 6px; }
+
+  /* Collapsed tab */
+  .poll-tab {
+    position: fixed;
+    bottom: 28px;
+    right: 24px;
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 10px 18px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(192,57,43,.35);
+    z-index: 90;
+    display: none;
+    align-items: center;
+    gap: 7px;
+    transition: opacity .2s;
+  }
+  .poll-tab:hover { opacity: .88; }
 
   /* ── Misc ── */
   .divider { height: 1px; background: var(--border); margin: 36px 0; }
@@ -298,47 +227,26 @@
 
   /* ── Mobile ── */
   @media (max-width: 680px) {
-    /* Masthead: title on top, lunch+weather side by side below */
-    .masthead-inner {
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto;
-      padding: 12px 16px 10px;
-      gap: 10px 12px;
-    }
-    /* Title spans full width on top row */
-    .masthead-center {
-      grid-column: 1 / -1;
-      grid-row: 1;
-    }
+    .masthead-inner { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; padding: 12px 16px 10px; gap: 10px 12px; }
+    .masthead-center { grid-column: 1 / -1; grid-row: 1; }
     .masthead-title { font-size: 2rem; }
     .masthead-logo { width: 36px; height: 36px; }
-
-    /* Lunch on bottom-left */
-    .masthead-lunch {
-      grid-column: 1;
-      grid-row: 2;
-    }
-
-    /* Weather on bottom-right */
-    .masthead-weather {
-      grid-column: 2;
-      grid-row: 2;
-      align-items: flex-end;
-    }
+    .masthead-lunch { grid-column: 1; grid-row: 2; }
+    .masthead-weather { grid-column: 2; grid-row: 2; align-items: flex-end; }
     .weather-day-label { text-align: right; }
     .weather-temp { font-size: 18px; }
     .weather-icon { font-size: 16px; }
     .weather-desc { font-size: 11px; }
     .masthead-lunch-text { font-size: 12px; }
-
-    /* Content */
     .page { padding: 20px 16px 48px; }
     .deadlines-grid { grid-template-columns: 1fr; }
     .accordion-title { font-size: 15px; }
     .quick-links { gap: 6px; }
     .quick-link { font-size: 12px; padding: 4px 12px; }
+    /* Poll: anchor to bottom-left on mobile so it doesn't cover content */
+    .poll-widget { right: auto; left: 12px; bottom: 16px; width: calc(100vw - 24px); max-width: 340px; }
+    .poll-tab { right: auto; left: 12px; bottom: 16px; }
   }
-
   @media (max-width: 400px) {
     .masthead-lunch-text { font-size: 11px; }
     .weather-desc { display: none; }
@@ -350,14 +258,10 @@
 
 <header class="masthead">
   <div class="masthead-inner">
-
-    <!-- Left: Lunch -->
     <div class="masthead-lunch">
       <span class="masthead-side-label">🍽 Today's Lunch</span>
       <span class="masthead-lunch-text" id="lunch-text">Loading…</span>
     </div>
-
-    <!-- Center: Title -->
     <div class="masthead-center">
       <div class="masthead-logo-title">
         <svg class="masthead-logo" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
@@ -369,8 +273,6 @@
       <div class="masthead-sub">The Pennington School</div>
       <div class="masthead-meta" id="issue-meta">Loading…</div>
     </div>
-
-    <!-- Right: Weather -->
     <div class="masthead-weather">
       <span class="weather-day-label" id="weather-day-label">Next school day</span>
       <div class="masthead-weather-main">
@@ -379,19 +281,36 @@
       </div>
       <span class="weather-desc" id="weather-desc">Loading…</span>
     </div>
-
   </div>
 </header>
 
 <main class="page">
   <div id="app"><div class="loading">Loading The Voice…</div></div>
-
   <footer class="footer" style="margin-top:48px">
     <p>The Voice · The Pennington School</p>
     <p style="margin-top:6px">Day students staying home sick: have a parent call <strong>609-737-1838</strong> or email <a href="mailto:mary.heaton@pennington.org">Mrs. Heaton</a>.</p>
     <p style="margin-top:6px"><a href="admin.html">pennington.org</a></p>
   </footer>
 </main>
+
+<!-- ── Poll Widget ── -->
+<div class="poll-widget" id="poll-widget">
+  <div class="poll-header" onclick="togglePoll()">
+    <div class="poll-header-left">
+      <span>📊</span>
+      <span class="poll-header-label">Poll of the Day</span>
+    </div>
+    <button class="poll-toggle-btn" id="poll-chevron" aria-label="Collapse poll">▼</button>
+  </div>
+  <div class="poll-body" id="poll-body">
+    <div class="loading" style="padding:20px;font-size:13px">Loading…</div>
+  </div>
+</div>
+
+<!-- Collapsed tab shown when poll is minimized -->
+<button class="poll-tab" id="poll-tab" onclick="expandPoll()" aria-label="Open poll">
+  📊 Poll of the Day
+</button>
 
 <script>
   // ── Auth redirect ─────────────────────────────────────────────
@@ -404,8 +323,6 @@
   // ── Config ────────────────────────────────────────────────────
   const SUPABASE_URL      = 'https://fcrghpinecvnxfcgfbbx.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjcmdocGluZWN2bnhmY2dmYmJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNzE2MjAsImV4cCI6MjA5Mzg0NzYyMH0.yRKPTYGSMet0e0HBKatI7cQ1JkdObt386b7uz3MRM_I';
-
-  // ── Pennington, NJ coords ─────────────────────────────────────
   const LAT = 40.3271, LON = -74.7899;
 
   function esc(s) {
@@ -424,14 +341,13 @@
   // ── Weather ───────────────────────────────────────────────────
   function nextWeekday() {
     const d = new Date();
-    const day = d.getDay(); // 0=Sun,6=Sat
+    const day = d.getDay();
     let add = 1;
-    if (day === 5) add = 3; // Friday → Monday
-    if (day === 6) add = 2; // Saturday → Monday
+    if (day === 5) add = 3;
+    if (day === 6) add = 2;
     d.setDate(d.getDate() + add);
     return d;
   }
-
   function weatherIcon(code) {
     if (code === 0) return '☀️';
     if (code <= 2) return '⛅';
@@ -444,7 +360,6 @@
     if (code <= 99) return '⛈️';
     return '🌡️';
   }
-
   function weatherDesc(code) {
     if (code === 0) return 'Clear skies';
     if (code <= 2) return 'Partly cloudy';
@@ -457,29 +372,132 @@
     if (code <= 99) return 'Thunderstorms';
     return 'Unknown';
   }
-
   async function loadWeather() {
     try {
       const target = nextWeekday();
       const dateStr = target.toISOString().split('T')[0];
       const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-      const dayName = days[target.getDay()];
-
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&daily=weathercode,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=America/New_York&start_date=${dateStr}&end_date=${dateStr}`;
       const res = await fetch(url);
       const data = await res.json();
-
       const code = data.daily.weathercode[0];
       const hi   = Math.round(data.daily.temperature_2m_max[0]);
       const lo   = Math.round(data.daily.temperature_2m_min[0]);
-
-      document.getElementById('weather-day-label').textContent = dayName;
+      document.getElementById('weather-day-label').textContent = days[target.getDay()];
       document.getElementById('weather-icon').textContent  = weatherIcon(code);
       document.getElementById('weather-temp').textContent  = `${hi}°`;
       document.getElementById('weather-desc').textContent  = `${weatherDesc(code)} · Low ${lo}°F`;
-    } catch {
-      document.getElementById('weather-desc').textContent = 'Unavailable';
+    } catch { document.getElementById('weather-desc').textContent = 'Unavailable'; }
+  }
+
+  // ── Poll ──────────────────────────────────────────────────────
+  let _pollId = null;
+  let _pollCollapsed = false;
+
+  function togglePoll() {
+    _pollCollapsed = !_pollCollapsed;
+    const widget = document.getElementById('poll-widget');
+    const tab    = document.getElementById('poll-tab');
+    const chev   = document.getElementById('poll-chevron');
+    if (_pollCollapsed) {
+      widget.classList.add('hidden');
+      tab.style.display = 'flex';
+      chev.textContent = '▲';
+    } else {
+      widget.classList.remove('hidden');
+      tab.style.display = 'none';
+      chev.textContent = '▼';
     }
+  }
+  function expandPoll() {
+    _pollCollapsed = false;
+    document.getElementById('poll-widget').classList.remove('hidden');
+    document.getElementById('poll-tab').style.display = 'none';
+    document.getElementById('poll-chevron').textContent = '▼';
+  }
+
+  async function loadPoll() {
+    const widget = document.getElementById('poll-widget');
+    const body   = document.getElementById('poll-body');
+    try {
+      const polls = await api('poll?select=*&enabled=eq.true&order=id.desc&limit=1');
+      const poll  = polls[0];
+      if (!poll || !poll.enabled) { widget.style.display = 'none'; return; }
+      _pollId = poll.id;
+
+      const options = poll.options || [];
+      const votes   = await api(`poll_votes?select=option_index&poll_id=eq.${poll.id}`);
+      const counts  = options.map((_, i) => votes.filter(v => v.option_index === i).length);
+      const total   = counts.reduce((a, b) => a + b, 0);
+
+      const hasVoted = localStorage.getItem(`poll_voted_${poll.id}`);
+      if (hasVoted !== null) {
+        renderResults(body, options, counts, total, true);
+      } else {
+        renderVoting(body, poll.question, options);
+      }
+    } catch(e) {
+      body.innerHTML = `<p style="font-size:12px;color:#a99e94;text-align:center;padding:8px">Poll unavailable.</p>`;
+      console.error(e);
+    }
+  }
+
+  function renderVoting(body, question, options) {
+    body.innerHTML = `
+      <div class="poll-question">${esc(question)}</div>
+      <div class="poll-options">
+        ${options.map((opt, i) =>
+          `<button class="poll-option-btn" onclick="castVote(${i})">${esc(opt)}</button>`
+        ).join('')}
+      </div>`;
+  }
+
+  async function castVote(optionIndex) {
+    if (!_pollId) return;
+    // Optimistic: mark voted immediately
+    localStorage.setItem(`poll_voted_${_pollId}`, optionIndex);
+
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/poll_votes`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify({ poll_id: _pollId, option_index: optionIndex }),
+      });
+    } catch(e) { console.error('Vote failed', e); }
+
+    // Re-fetch and show results
+    const body  = document.getElementById('poll-body');
+    const polls = await api(`poll?select=*&id=eq.${_pollId}`);
+    const poll  = polls[0];
+    const votes = await api(`poll_votes?select=option_index&poll_id=eq.${_pollId}`);
+    const options = poll.options || [];
+    const counts  = options.map((_, i) => votes.filter(v => v.option_index === i).length);
+    const total   = counts.reduce((a, b) => a + b, 0);
+    renderResults(body, options, counts, total, true);
+  }
+
+  function renderResults(body, options, counts, total, justVoted) {
+    const bars = options.map((opt, i) => {
+      const pct = total > 0 ? Math.round((counts[i] / total) * 100) : 0;
+      return `<div class="poll-result-item">
+        <div class="poll-result-label">
+          <span>${esc(opt)}</span>
+          <span class="poll-result-pct">${pct}%</span>
+        </div>
+        <div class="poll-bar-track">
+          <div class="poll-bar-fill" style="width:${pct}%"></div>
+        </div>
+      </div>`;
+    }).join('');
+    body.innerHTML = `
+      <div class="poll-results">${bars}</div>
+      ${justVoted ? `<div class="poll-voted-label">✓ Thanks for voting!</div>` : ''}
+      <div class="poll-total">${total} vote${total !== 1 ? 's' : ''} total</div>`;
   }
 
   // ── Accordion ─────────────────────────────────────────────────
@@ -509,32 +527,27 @@
     if (p === 'very_important') return `<span class="priority-badge priority-very-important">🔴 Very Important</span>`;
     return '';
   }
-
   function priorityClass(p) {
     if (p === 'important') return 'priority-important-item';
     if (p === 'very_important') return 'priority-very-important-item';
     return '';
   }
-
   function buildQuickLinks(links) {
     if (!links.length) return '';
     return `<nav class="quick-links">${links.map(l =>
-      `<a class="quick-link" href="${esc(l.url)}" target="_blank">${l.emoji ? `<span>${esc(l.emoji)}</span>` : ''}${esc(l.label)}</a>`
+      `<a class="quick-link" href="${esc(l.url)}" target="_blank">${l.emoji?`<span>${esc(l.emoji)}</span>`:''}${esc(l.label)}</a>`
     ).join('')}</nav>`;
   }
-
   function buildAlert(al) {
     if (!al?.enabled) return '';
     return `<div class="alert-banner" role="alert"><span>📢</span><span>${esc(al.text)}</span></div>`;
   }
-
   function buildDeadlines(deadlines) {
     if (!deadlines.length) return '';
     return `<div class="section-label">Upcoming deadlines</div><div class="deadlines-grid">${
-      deadlines.map(d => `<div class="deadline-card"><div class="deadline-date">${esc(d.date_label)}</div><div class="deadline-title">${esc(d.title)}</div></div>`).join('')
+      deadlines.map(d=>`<div class="deadline-card"><div class="deadline-date">${esc(d.date_label)}</div><div class="deadline-title">${esc(d.title)}</div></div>`).join('')
     }</div>`;
   }
-
   function buildSections(sections, stories) {
     return sections.map((sec, i) => {
       const secStories = stories.filter(s => s.section_id === sec.id);
@@ -545,20 +558,20 @@
             <div class="accordion-trigger-left">
               <div>
                 <div class="accordion-title">${esc(s.title)}</div>
-                ${s.preview ? `<div class="accordion-preview">${esc(s.preview)}</div>` : ''}
+                ${s.preview?`<div class="accordion-preview">${esc(s.preview)}</div>`:''}
               </div>
             </div>
             <div class="accordion-trigger-right">
               ${priorityBadge(s.priority)}
-              ${s.badge ? `<span class="accordion-badge">${esc(s.badge)}</span>` : ''}
+              ${s.badge?`<span class="accordion-badge">${esc(s.badge)}</span>`:''}
               <div class="accordion-arrow">▼</div>
             </div>
           </button>
           <div class="accordion-body">
-            <div class="accordion-body-inner">${s.body_html || ''}</div>
+            <div class="accordion-body-inner">${s.body_html||''}</div>
           </div>
         </div>`).join('');
-      return `${i > 0 ? '<div class="divider"></div>' : ''}
+      return `${i>0?'<div class="divider"></div>':''}
         <div class="section-label">${esc(sec.name)}</div>
         <div class="accordion" id="acc-${sec.id}">${items}</div>`;
     }).join('');
@@ -574,27 +587,24 @@
       api('sections?select=*&order=sort_order'),
       api('stories?select=*&order=sort_order'),
     ]);
-
     const iss = issues[0] || {};
     document.getElementById('issue-meta').textContent =
       [iss.issue_date, iss.day_label, iss.rotation_day].filter(Boolean).join(' · ');
     document.getElementById('lunch-text').textContent = iss.lunch || 'Not set';
-
     document.getElementById('app').innerHTML = [
       buildQuickLinks(links),
       buildAlert(alerts[0]),
       buildDeadlines(deadlines),
       buildSections(sections, stories),
     ].join('');
-
     initAccordions();
   }
 
   load().catch(() => {
     document.getElementById('app').innerHTML = `<div class="loading">Could not load content. Please try again later.</div>`;
   });
-
   loadWeather();
+  loadPoll();
 </script>
 </body>
 </html>
