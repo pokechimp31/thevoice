@@ -528,12 +528,7 @@
 
   async function castVote(optionIndex) {
     if (!_pollId) return;
-    // Guard 1: already voted in a previous session (localStorage check)
-    if (storedRowId() !== null) {
-      await refreshResults(false);
-      return;
-    }
-    // Guard 2: vote request already in flight (double-click / double-tap)
+    // Guard: vote request already in flight (double-click / double-tap)
     if (_voting) return;
     _voting = true;
 
@@ -546,22 +541,45 @@
     });
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/poll_votes`, {
-        method: 'POST',
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-          Prefer: 'return=representation',
-        },
-        body: JSON.stringify({ poll_id: _pollId, option_index: optionIndex }),
-      });
-      if (res.ok) {
-        const rows = await res.json();
-        const rowId = rows?.[0]?.id;
-        // Store a truthy sentinel even if the DB didn't return an id,
-        // so the localStorage guard fires on any future visit.
-        localStorage.setItem(pollStorageKey(), rowId != null ? String(rowId) : 'voted');
+      const existingRowId = storedRowId();
+
+      if (existingRowId && existingRowId !== 'voted') {
+        // User is changing their vote — PATCH the existing row instead of
+        // inserting a new one, so the total vote count stays the same.
+        const res = await fetch(
+          `${SUPABASE_URL}/rest/v1/poll_votes?id=eq.${encodeURIComponent(existingRowId)}`,
+          {
+            method: 'PATCH',
+            headers: {
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+              'Content-Type': 'application/json',
+              Prefer: 'return=minimal',
+            },
+            body: JSON.stringify({ option_index: optionIndex }),
+          }
+        );
+        if (!res.ok) console.error('Patch vote failed', res.status);
+        // rowId stays the same — no localStorage update needed
+      } else {
+        // First-time vote — POST a new row.
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/poll_votes`, {
+          method: 'POST',
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation',
+          },
+          body: JSON.stringify({ poll_id: _pollId, option_index: optionIndex }),
+        });
+        if (res.ok) {
+          const rows = await res.json();
+          const rowId = rows?.[0]?.id;
+          // Store the row id so future vote-changes can PATCH it.
+          // Fall back to sentinel string if DB didn't echo the id.
+          localStorage.setItem(pollStorageKey(), rowId != null ? String(rowId) : 'voted');
+        }
       }
     } catch(e) { console.error('Vote failed', e); }
 
@@ -571,20 +589,9 @@
 
   async function changeVote() {
     if (!_pollId) return;
-    const body  = document.getElementById('poll-body');
-    const rowId = storedRowId();
-    if (rowId) {
-      try {
-        await fetch(`${SUPABASE_URL}/rest/v1/poll_votes?id=eq.${encodeURIComponent(rowId)}`, {
-          method: 'DELETE',
-          headers: {
-            apikey: SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          },
-        });
-      } catch(e) { console.error('Failed to delete old vote', e); }
-    }
-    localStorage.removeItem(pollStorageKey());
+    const body = document.getElementById('poll-body');
+    // Don't touch the DB or localStorage — the existing row stays in place.
+    // castVote will PATCH the row when the user picks a new option.
     try {
       const polls = await api(`poll?select=*&id=eq.${_pollId}`);
       const poll  = polls[0];
