@@ -437,36 +437,47 @@
 <script>
   // ── Password Gate ──────────────────────────────────────────────
   (function() {
-    const PASSWORD    = 'Penn1838';
-    const SESSION_KEY = 'voice_auth';
-    const EXPIRY_MS   = 365 * 24 * 60 * 60 * 1000; // 1 year
+  // This is the SHA-256 hash of 'Nice try bro'
+  const HASHED_PASSWORD = '74a88f572993888362678257007f30062776c5b964344d137f766329c3214731';
+  const SESSION_KEY = 'voice_auth';
+  const EXPIRY_MS   = 365 * 24 * 60 * 60 * 1000;
 
-    function isAuthed() {
-      try {
-        const val = localStorage.getItem(SESSION_KEY);
-        if (!val) return false;
-        const { expires } = JSON.parse(val);
-        return Date.now() < expires;
-      } catch { return false; }
-    }
+  // Helper function to turn a string into a SHA-256 hex string
+  async function sha256(message) {
+    const msgUint8 = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
 
-    if (isAuthed()) {
-      // Already authenticated — hide gate immediately
+  function isAuthed() {
+    try {
+      const val = localStorage.getItem(SESSION_KEY);
+      if (!val) return false;
+      const { expires } = JSON.parse(val);
+      return Date.now() < expires;
+    } catch { return false; }
+  }
+
+  if (isAuthed()) {
+    document.getElementById('auth-gate').style.display = 'none';
+  }
+
+  // Updated to be an async function
+  window.checkPassword = async function() {
+    const input = document.getElementById('gate-input').value;
+    const inputHash = await sha256(input);
+
+    if (inputHash === HASHED_PASSWORD) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + EXPIRY_MS }));
       document.getElementById('auth-gate').style.display = 'none';
+    } else {
+      document.getElementById('gate-error').textContent = 'Incorrect password. Try again.';
+      document.getElementById('gate-input').value = '';
+      document.getElementById('gate-input').focus();
     }
-
-    window.checkPassword = function() {
-      const input = document.getElementById('gate-input').value;
-      if (input === PASSWORD) {
-        localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + EXPIRY_MS }));
-        document.getElementById('auth-gate').style.display = 'none';
-      } else {
-        document.getElementById('gate-error').textContent = 'Incorrect password. Try again.';
-        document.getElementById('gate-input').value = '';
-        document.getElementById('gate-input').focus();
-      }
-    };
-  })();
+  };
+})();
 
   // ── Auth redirect ─────────────────────────────────────────────
   const AUTH_TOKENS = ['recovery_token', 'invite_token', 'confirmation_token'];
