@@ -139,6 +139,35 @@
   .accordion-body-inner li { margin-bottom: 6px; }
   .accordion-body-inner h2, .accordion-body-inner h3 { margin-top: 16px; margin-bottom: 4px; font-family: var(--font-head); }
 
+  /* ── Lost & Found FAB ── */
+  .lf-fab {
+    position: fixed;
+    bottom: 28px;
+    left: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 16px;
+    box-shadow: 0 4px 24px rgba(44,44,44,.12);
+    z-index: 90;
+    text-decoration: none;
+    transition: box-shadow .2s, transform .15s, border-color .2s;
+    max-width: 210px;
+  }
+  .lf-fab:hover {
+    box-shadow: 0 6px 28px rgba(44,44,44,.16);
+    transform: translateY(-2px);
+    border-color: var(--red);
+    text-decoration: none;
+  }
+  .lf-fab-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
+  .lf-fab-text { display: flex; flex-direction: column; gap: 1px; }
+  .lf-fab-label { font-family: var(--font-ui); font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.2; }
+  .lf-fab-sub { font-family: var(--font-ui); font-size: 10px; color: var(--text-muted); line-height: 1.3; }
+
   /* ── Poll widget ── */
   .poll-widget {
     position: fixed;
@@ -262,6 +291,8 @@
     /* Poll: anchor to bottom-left on mobile so it doesn't cover content */
     .poll-widget { right: auto; left: 12px; bottom: 16px; width: calc(100vw - 24px); max-width: 340px; }
     .poll-tab { right: auto; left: 12px; bottom: 16px; }
+    /* L&F FAB: hide on mobile when poll is also present to avoid overlap */
+    .lf-fab { display: none; }
   }
   @media (max-width: 400px) {
     .masthead-lunch-text { font-size: 11px; }
@@ -308,6 +339,15 @@
     <p style="margin-top:6px"><a href="admin.html">pennington.org</a></p>
   </footer>
 </main>
+
+<!-- ── Lost & Found FAB ── -->
+<a class="lf-fab" href="lost-and-found.html" aria-label="Lost and Found">
+  <span class="lf-fab-icon">🔍</span>
+  <div class="lf-fab-text">
+    <span class="lf-fab-label">Lost &amp; Found</span>
+    <span class="lf-fab-sub">Post or find lost items</span>
+  </div>
+</a>
 
 <!-- ── Poll Widget ── -->
 <div class="poll-widget" id="poll-widget">
@@ -409,17 +449,15 @@
 
   // ── Poll ──────────────────────────────────────────────────────
   let _pollId      = null;
-  let _pollVersion = null;  // tracks vote_version so admin clears invalidate local votes
+  let _pollVersion = null;
   let _pollOptions = [];
   let _pollCollapsed = false;
 
-  // localStorage key includes both poll id AND version so a vote-clear forces re-vote.
-  // The stored value is the inserted row id (string), so we can delete it on change.
   function pollStorageKey() {
     return `poll_voted_${_pollId}_v${_pollVersion}`;
   }
   function storedRowId() {
-    return localStorage.getItem(pollStorageKey()); // null if not voted, row id string if voted
+    return localStorage.getItem(pollStorageKey());
   }
 
   function togglePoll() {
@@ -484,9 +522,7 @@
 
   async function castVote(optionIndex) {
     if (!_pollId) return;
-
     try {
-      // Use return=representation so Supabase gives us back the inserted row with its id
       const res = await fetch(`${SUPABASE_URL}/rest/v1/poll_votes`, {
         method: 'POST',
         headers: {
@@ -500,11 +536,9 @@
       if (res.ok) {
         const rows = await res.json();
         const rowId = rows?.[0]?.id;
-        // Store the row id — used to delete this exact vote if user changes their answer
         if (rowId != null) localStorage.setItem(pollStorageKey(), String(rowId));
       }
     } catch(e) { console.error('Vote failed', e); }
-
     await refreshResults(true);
   }
 
@@ -512,8 +546,6 @@
     if (!_pollId) return;
     const body  = document.getElementById('poll-body');
     const rowId = storedRowId();
-
-    // Delete the user's previous vote row from Supabase so it's not counted anymore
     if (rowId) {
       try {
         await fetch(`${SUPABASE_URL}/rest/v1/poll_votes?id=eq.${encodeURIComponent(rowId)}`, {
@@ -525,11 +557,7 @@
         });
       } catch(e) { console.error('Failed to delete old vote', e); }
     }
-
-    // Clear localStorage so user is no longer considered "voted"
     localStorage.removeItem(pollStorageKey());
-
-    // Re-render voting UI
     try {
       const polls = await api(`poll?select=*&id=eq.${_pollId}`);
       const poll  = polls[0];

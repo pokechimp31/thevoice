@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lost &amp; Found · The Voice @ The Pennington School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<style>
+  :root {
+    --red: #c0392b;
+    --red-dark: #962d22;
+    --red-light: #f9eeec;
+    --bg: #faf6f1;
+    --bg-card: #ffffff;
+    --bg-rule: #e8ddd0;
+    --text: #2c2c2c;
+    --text-muted: #7a6e64;
+    --text-light: #a99e94;
+    --border: #e0d6cb;
+    --radius: 10px;
+    --font-head: 'Playfair Display', Georgia, serif;
+    --font-body: 'Source Serif 4', Georgia, serif;
+    --font-ui: 'DM Sans', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.7; }
+  a { color: var(--red); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ── Masthead ── */
+  .masthead {
+    background: var(--bg-card);
+    border-bottom: 3px solid var(--red);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(44,44,44,.07);
+  }
+  .masthead-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    gap: 16px;
+  }
+  .masthead-brand { display: flex; align-items: center; gap: 12px; }
+  .masthead-logo { width: 40px; height: 40px; flex-shrink: 0; }
+  .masthead-title-wrap { display: flex; flex-direction: column; }
+  .masthead-title { font-family: var(--font-head); font-size: 1.6rem; font-weight: 900; color: var(--red); line-height: 1; }
+  .masthead-sub { font-family: var(--font-ui); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); }
+  .masthead-page-label {
+    font-family: var(--font-ui); font-size: 12px; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--text-light);
+    border-left: 1px solid var(--border); padding-left: 16px;
+  }
+  .back-link {
+    font-family: var(--font-ui); font-size: 13px; color: var(--text-muted);
+    display: inline-flex; align-items: center; gap: 5px;
+    border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .back-link:hover { background: var(--red-light); border-color: var(--red); color: var(--red); text-decoration: none; }
+
+  /* ── Page Layout ── */
+  .page { max-width: 1000px; margin: 0 auto; padding: 36px 24px 80px; }
+
+  /* ── Hero ── */
+  .lf-hero {
+    text-align: center;
+    padding: 36px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 36px;
+  }
+  .lf-hero-icon { font-size: 48px; line-height: 1; margin-bottom: 12px; }
+  .lf-hero-title { font-family: var(--font-head); font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; color: var(--text); line-height: 1.1; margin-bottom: 10px; }
+  .lf-hero-desc { font-family: var(--font-ui); font-size: 15px; color: var(--text-muted); max-width: 520px; margin: 0 auto 20px; }
+  .btn-submit-hero {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--red); color: white; border: none; border-radius: 24px;
+    padding: 12px 28px; font-family: var(--font-ui); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: background .15s, transform .1s;
+    box-shadow: 0 4px 16px rgba(192,57,43,.28);
+  }
+  .btn-submit-hero:hover { background: var(--red-dark); transform: translateY(-1px); }
+
+  /* ── Section label ── */
+  .section-label {
+    font-family: var(--font-ui); font-size: 10px; font-weight: 500;
+    letter-spacing: .22em; text-transform: uppercase; color: var(--text-light);
+    margin-bottom: 16px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
+  }
+
+  /* ── Filter bar ── */
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; align-items: center; }
+  .filter-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 5px 14px; font-family: var(--font-ui); font-size: 12px; color: var(--text-muted);
+    cursor: pointer; transition: all .15s;
+  }
+  .filter-chip:hover, .filter-chip.active { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .filter-count { background: var(--red); color: white; border-radius: 10px; padding: 1px 6px; font-size: 10px; font-weight: 600; }
+
+  /* ── Items grid ── */
+  .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 48px; }
+  .item-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; transition: box-shadow .2s, transform .15s;
+    display: flex; flex-direction: column;
+  }
+  .item-card:hover { box-shadow: 0 4px 20px rgba(44,44,44,.10); transform: translateY(-2px); }
+  .item-card-photo { width: 100%; height: 160px; object-fit: cover; background: var(--bg-rule); display: flex; align-items: center; justify-content: center; font-size: 40px; color: var(--text-light); flex-shrink: 0; }
+  .item-card-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .item-card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .item-card-category { font-family: var(--font-ui); font-size: 9px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--red); }
+  .item-card-title { font-family: var(--font-body); font-size: 17px; font-weight: 600; line-height: 1.3; color: var(--text); }
+  .item-card-desc { font-family: var(--font-ui); font-size: 13px; color: var(--text-muted); line-height: 1.5; flex: 1; }
+  .item-card-meta { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .item-card-meta-row { display: flex; align-items: flex-start; gap: 6px; font-family: var(--font-ui); font-size: 12px; color: var(--text-muted); }
+  .item-card-meta-row span:first-child { flex-shrink: 0; }
+  .item-card-footer { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .item-card-contact { font-family: var(--font-ui); font-size: 12px; color: var(--text-muted); }
+  .item-card-contact a { color: var(--red); }
+  .btn-found {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: none; border: 1px solid var(--border); border-radius: 16px;
+    padding: 4px 12px; font-family: var(--font-ui); font-size: 11px; font-weight: 500;
+    color: var(--text-muted); cursor: pointer; transition: all .15s; white-space: nowrap;
+  }
+  .btn-found:hover { background: #eafaf1; border-color: #27ae60; color: #27ae60; }
+  .item-card-date { font-family: var(--font-ui); font-size: 10px; color: var(--text-light); margin-top: 4px; }
+
+  /* ── Empty state ── */
+  .empty-state { text-align: center; padding: 64px 24px; color: var(--text-muted); }
+  .empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-state p { font-family: var(--font-ui); font-size: 15px; }
+
+  /* ── Loading ── */
+  .loading { text-align: center; padding: 60px; font-family: var(--font-ui); color: var(--text-muted); font-size: 14px; }
+
+  /* ── Pending notice ── */
+  .pending-notice {
+    background: #fff8ec; border: 1px solid #f5cba7; border-left: 4px solid #e67e22;
+    border-radius: var(--radius); padding: 14px 18px;
+    font-family: var(--font-ui); font-size: 13px; color: #7a5c30;
+    margin-bottom: 24px; display: flex; align-items: center; gap: 10px;
+  }
+
+  /* ── Modal overlay ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(44,44,44,.45);
+    z-index: 200; display: none; align-items: flex-start; justify-content: center;
+    padding: 40px 20px; overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg-card); border-radius: 16px;
+    width: 100%; max-width: 560px;
+    box-shadow: 0 8px 48px rgba(44,44,44,.18);
+    animation: modalIn .22s ease;
+    margin: auto;
+  }
+  @keyframes modalIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .modal-header {
+    padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title { font-family: var(--font-head); font-size: 20px; font-weight: 700; color: var(--text); }
+  .modal-close {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 50%;
+    width: 30px; height: 30px; cursor: pointer; font-size: 14px;
+    display: flex; align-items: center; justify-content: center; color: var(--text-muted);
+    transition: background .15s;
+  }
+  .modal-close:hover { background: var(--red-light); color: var(--red); }
+  .modal-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+  /* ── Form elements ── */
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-label { font-family: var(--font-ui); font-size: 12px; font-weight: 600; color: var(--text-muted); letter-spacing: .04em; }
+  .form-label .req { color: var(--red); margin-left: 2px; }
+  .form-input, .form-textarea, .form-select {
+    width: 100%; border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 13px; font-size: 14px; font-family: var(--font-ui);
+    outline: none; transition: border-color .15s; background: white; color: var(--text);
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--red); }
+  .form-textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+  .form-hint { font-family: var(--font-ui); font-size: 11px; color: var(--text-light); line-height: 1.4; }
+
+  /* Anon toggle */
+  .anon-toggle-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px; cursor: pointer;
+  }
+  .anon-toggle-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--red); cursor: pointer; flex-shrink: 0; }
+  .anon-toggle-label { font-family: var(--font-ui); font-size: 13px; color: var(--text); line-height: 1.4; }
+  .anon-toggle-label small { display: block; font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+  .contact-fields { display: flex; flex-direction: column; gap: 12px; transition: all .2s; }
+  .dropoff-fields { display: none; flex-direction: column; gap: 12px; }
+  .dropoff-fields.visible { display: flex; }
+  .contact-fields.hidden { display: none; }
+
+  /* Dropoff options */
+  .dropoff-options { display: flex; flex-direction: column; gap: 8px; }
+  .dropoff-opt {
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px;
+    cursor: pointer; transition: all .15s; background: white;
+  }
+  .dropoff-opt:hover { border-color: var(--red); background: var(--red-light); }
+  .dropoff-opt input[type=radio] { accent-color: var(--red); flex-shrink: 0; }
+  .dropoff-opt-label { font-family: var(--font-ui); font-size: 13px; color: var(--text); }
+  .dropoff-opt-sub { font-size: 11px; color: var(--text-muted); }
+
+  /* Photo upload */
+  .photo-upload-area {
+    border: 2px dashed var(--border); border-radius: 10px;
+    padding: 24px; text-align: center; cursor: pointer;
+    transition: border-color .15s, background .15s; position: relative;
+  }
+  .photo-upload-area:hover, .photo-upload-area.drag { border-color: var(--red); background: var(--red-light); }
+  .photo-upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .photo-upload-icon { font-size: 28px; margin-bottom: 6px; }
+  .photo-upload-text { font-family: var(--font-ui); font-size: 13px; color: var(--text-muted); }
+  .photo-upload-text strong { color: var(--red); }
+  .photo-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; display: none; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: none; border-radius: 8px; padding: 10px 20px;
+    font-family: var(--font-ui); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: opacity .15s, background .15s;
+  }
+  .btn:hover { opacity: .88; }
+  .btn-primary { background: var(--red); color: white; }
+  .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* Success state */
+  .success-panel {
+    text-align: center; padding: 32px 24px;
+    display: none; flex-direction: column; align-items: center; gap: 12px;
+  }
+  .success-panel.visible { display: flex; }
+  .success-icon { font-size: 52px; }
+  .success-title { font-family: var(--font-head); font-size: 22px; font-weight: 700; }
+  .success-desc { font-family: var(--font-ui); font-size: 14px; color: var(--text-muted); max-width: 340px; line-height: 1.5; }
+
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #2c2c2c; color: white; padding: 10px 20px; border-radius: 20px;
+    font-family: var(--font-ui); font-size: 13px; opacity: 0;
+    transition: opacity .2s, transform .2s; pointer-events: none; z-index: 999;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.error { background: var(--red); }
+
+  /* ── Footer ── */
+  .footer { border-top: 2px solid var(--border); padding: 28px 0 0; text-align: center; font-family: var(--font-ui); font-size: 12px; color: var(--text-light); }
+  .footer a { color: var(--text-muted); }
+
+  @media (max-width: 600px) {
+    .masthead-page-label { display: none; }
+    .items-grid { grid-template-columns: 1fr; }
+    .lf-hero { padding: 24px 0 20px; }
+    .page { padding: 20px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Masthead -->
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-brand">
+      <svg class="masthead-logo" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="30" cy="30" r="29" fill="#c0392b" stroke="#962d22" stroke-width="1.5"/>
+        <text x="30" y="42" text-anchor="middle" font-family="'Playfair Display',serif" font-size="32" font-weight="900" fill="white">P</text>
+      </svg>
+      <div class="masthead-title-wrap">
+        <div class="masthead-title">The Voice</div>
+        <div class="masthead-sub">The Pennington School</div>
+      </div>
+      <span class="masthead-page-label">Lost &amp; Found</span>
+    </div>
+    <a href="index.html" class="back-link">← Back to newsletter</a>
+  </div>
+</header>
+
+<main class="page">
+  <!-- Hero -->
+  <div class="lf-hero">
+    <div class="lf-hero-icon">🔍</div>
+    <h1 class="lf-hero-title">Lost &amp; Found</h1>
+    <p class="lf-hero-desc">Lost something on campus? Post it here and let the Pennington community help you find it. Items are reviewed before appearing.</p>
+    <button class="btn-submit-hero" onclick="openSubmitModal()">+ Report a Lost Item</button>
+  </div>
+
+  <!-- Items section -->
+  <div class="section-label" id="items-section-label">Active listings</div>
+
+  <div class="filter-bar" id="filter-bar">
+    <span class="filter-chip active" data-filter="all" onclick="setFilter('all',this)">All <span class="filter-count" id="count-all">0</span></span>
+    <span class="filter-chip" data-filter="Clothing" onclick="setFilter('Clothing',this)">👕 Clothing</span>
+    <span class="filter-chip" data-filter="Electronics" onclick="setFilter('Electronics',this)">📱 Electronics</span>
+    <span class="filter-chip" data-filter="Keys & ID" onclick="setFilter('Keys & ID',this)">🔑 Keys &amp; ID</span>
+    <span class="filter-chip" data-filter="Books & Supplies" onclick="setFilter('Books & Supplies',this)">📚 Books &amp; Supplies</span>
+    <span class="filter-chip" data-filter="Other" onclick="setFilter('Other',this)">📦 Other</span>
+  </div>
+
+  <div id="items-container">
+    <div class="loading">Loading lost items…</div>
+  </div>
+
+  <footer class="footer">
+    <p>The Voice · The Pennington School</p>
+    <p style="margin-top:6px">Questions? Contact <a href="mailto:mary.heaton@pennington.org">Mrs. Heaton</a>.</p>
+    <p style="margin-top:6px"><a href="index.html">← Back to newsletter</a></p>
+  </footer>
+</main>
+
+<!-- Submit Modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOnBg(event)">
+  <div class="modal" id="submit-modal">
+    <div class="modal-header">
+      <span class="modal-title">Report a Lost Item</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <!-- Form -->
+    <div id="form-panel">
+      <div class="modal-body">
+
+        <div class="form-group">
+          <label class="form-label">Item name <span class="req">*</span></label>
+          <input type="text" class="form-input" id="f-name" placeholder="e.g. Blue Patagonia fleece">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Category <span class="req">*</span></label>
+          <select class="form-select" id="f-category">
+            <option value="">Select a category…</option>
+            <option>Clothing</option>
+            <option>Electronics</option>
+            <option>Keys &amp; ID</option>
+            <option>Books &amp; Supplies</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description <span class="req">*</span></label>
+          <textarea class="form-textarea" id="f-desc" placeholder="Describe the item — color, size, distinguishing features…"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Last seen location <span class="req">*</span></label>
+          <input type="text" class="form-input" id="f-location" placeholder="e.g. Main gym bleachers, Science building hallway">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Photo <span style="color:var(--text-light);font-weight:400">(optional)</span></label>
+          <div class="photo-upload-area" id="photo-area">
+            <input type="file" accept="image/*" id="f-photo" onchange="previewPhoto(this)">
+            <div id="photo-placeholder">
+              <div class="photo-upload-icon">📷</div>
+              <div class="photo-upload-text"><strong>Click to upload</strong> or drag &amp; drop<br><span style="font-size:11px">JPG, PNG, GIF up to 5MB</span></div>
+            </div>
+            <img class="photo-preview" id="photo-preview-img" alt="Preview">
+          </div>
+          <button type="button" id="remove-photo-btn" style="display:none;margin-top:6px;font-family:var(--font-ui);font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;text-align:left" onclick="removePhoto()">✕ Remove photo</button>
+        </div>
+
+        <!-- Anonymous toggle -->
+        <div class="form-group">
+          <label class="form-label">Contact / Drop-off <span class="req">*</span></label>
+          <label class="anon-toggle-row">
+            <input type="checkbox" id="anon-check" onchange="toggleAnon()">
+            <span class="anon-toggle-label">
+              Stay anonymous
+              <small>Instead of contact info, select a campus drop-off location</small>
+            </span>
+          </label>
+        </div>
+
+        <!-- Contact fields (shown by default) -->
+        <div class="contact-fields" id="contact-fields">
+          <div class="form-group">
+            <label class="form-label">Your name <span style="color:var(--text-light);font-weight:400">(optional)</span></label>
+            <input type="text" class="form-input" id="f-submitter-name" placeholder="First name, last name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email <span style="color:var(--text-light);font-weight:400">(optional)</span></label>
+            <input type="text" class="form-input" id="f-email" placeholder="your@pennington.org">
+            <span class="form-hint">Displayed publicly so finders can reach you.</span>
+          </div>
+        </div>
+
+        <!-- Dropoff fields (shown when anonymous) -->
+        <div class="dropoff-fields" id="dropoff-fields">
+          <div class="form-group">
+            <label class="form-label">Drop-off location <span class="req">*</span></label>
+            <div class="dropoff-options">
+              <label class="dropoff-opt">
+                <input type="radio" name="dropoff" value="Mrs. Heaton's office" id="drop-heaton">
+                <div>
+                  <div class="dropoff-opt-label">Mrs. Heaton's office</div>
+                  <div class="dropoff-opt-sub">Main Building · Attendance office</div>
+                </div>
+              </label>
+              <label class="dropoff-opt">
+                <input type="radio" name="dropoff" value="Mrs. Kuser's office" id="drop-kuser">
+                <div>
+                  <div class="dropoff-opt-label">Mrs. Kuser's office</div>
+                  <div class="dropoff-opt-sub">Student services</div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" id="submit-btn" onclick="submitItem()">Submit item</button>
+      </div>
+    </div>
+
+    <!-- Success panel -->
+    <div class="success-panel" id="success-panel">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Submitted!</div>
+      <p class="success-desc">Your item has been submitted for review. It will appear on this page once an admin approves it — usually within a school day.</p>
+      <button class="btn btn-primary" onclick="closeModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const SUPABASE_URL      = 'https://fcrghpinecvnxfcgfbbx.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjcmdocGluZWN2bnhmY2dmYmJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNzE2MjAsImV4cCI6MjA5Mzg0NzYyMH0.yRKPTYGSMet0e0HBKatI7cQ1JkdObt386b7uz3MRM_I';
+
+  let allItems = [];
+  let currentFilter = 'all';
+  let photoBase64 = null;
+
+  async function api(path, opts={}) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        ...opts.headers
+      },
+      ...opts
+    });
+    if (!res.ok) throw new Error(`API ${res.status}`);
+    return opts.method && opts.method !== 'GET' ? res : res.json();
+  }
+
+  // ── Load items ──────────────────────────────────────────────
+  async function loadItems() {
+    try {
+      const items = await api('lost_and_found?select=*&approved=eq.true&found=eq.false&order=created_at.desc');
+      allItems = items;
+      document.getElementById('count-all').textContent = items.length;
+      renderItems();
+    } catch(e) {
+      document.getElementById('items-container').innerHTML =
+        `<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Could not load items. Please try again later.</p></div>`;
+    }
+  }
+
+  function setFilter(f, el) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderItems();
+  }
+
+  function categoryIcon(cat) {
+    const map = { 'Clothing':'👕', 'Electronics':'📱', 'Keys & ID':'🔑', 'Books & Supplies':'📚', 'Other':'📦' };
+    return map[cat] || '📦';
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  function renderItems() {
+    const filtered = currentFilter === 'all' ? allItems : allItems.filter(i => i.category === currentFilter);
+    const container = document.getElementById('items-container');
+    if (!filtered.length) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔍</div><p>${currentFilter==='all'?'No lost items posted yet — check back soon.':'No items in this category.'}</p></div>`;
+      return;
+    }
+    container.innerHTML = `<div class="items-grid">${filtered.map(item => {
+      const contactHtml = item.is_anonymous
+        ? `<span>📍 Drop off at ${esc(item.dropoff_location||'campus office')}</span>`
+        : `<span>${item.submitter_name ? esc(item.submitter_name) + ' · ' : ''}${item.email ? `<a href="mailto:${esc(item.email)}">${esc(item.email)}</a>` : 'Anonymous'}</span>`;
+
+      const photoHtml = item.photo_url
+        ? `<div class="item-card-photo"><img src="${esc(item.photo_url)}" alt="${esc(item.item_name)}" loading="lazy"></div>`
+        : `<div class="item-card-photo">${categoryIcon(item.category)}</div>`;
+
+      return `<div class="item-card">
+        ${photoHtml}
+        <div class="item-card-body">
+          <div class="item-card-category">${esc(item.category||'Other')}</div>
+          <div class="item-card-title">${esc(item.item_name)}</div>
+          <div class="item-card-desc">${esc(item.description)}</div>
+          <div class="item-card-meta">
+            <div class="item-card-meta-row"><span>📍</span><span>Last seen: ${esc(item.last_seen_location)}</span></div>
+          </div>
+          <div class="item-card-date">Posted ${formatDate(item.created_at)}</div>
+        </div>
+        <div class="item-card-footer">
+          <div class="item-card-contact">${contactHtml}</div>
+          <button class="btn-found" onclick="markFound(${item.id}, this)">✓ Found!</button>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  async function markFound(id, btn) {
+    if (!confirm('Mark this item as found? It will be reviewed by an admin before being removed.')) return;
+    btn.disabled = true;
+    btn.textContent = '⏳ Pending…';
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/lost_and_found?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify({ found_pending: true }),
+      });
+      showToast('Marked as found — pending admin review ✓');
+      btn.textContent = '✓ Marked found';
+      btn.style.color = '#27ae60';
+      btn.style.borderColor = '#27ae60';
+    } catch(e) {
+      btn.disabled = false;
+      btn.textContent = '✓ Found!';
+      showToast('Could not update — try again', true);
+    }
+  }
+
+  // ── Submit modal ─────────────────────────────────────────────
+  function openSubmitModal() {
+    document.getElementById('modal-overlay').classList.add('open');
+    document.getElementById('form-panel').style.display = 'block';
+    document.getElementById('success-panel').classList.remove('visible');
+    resetForm();
+  }
+  function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+  function closeModalOnBg(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+
+  function resetForm() {
+    ['f-name','f-category','f-desc','f-location','f-submitter-name','f-email'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('anon-check').checked = false;
+    document.getElementById('contact-fields').classList.remove('hidden');
+    document.getElementById('dropoff-fields').classList.remove('visible');
+    document.querySelectorAll('input[name=dropoff]').forEach(r => r.checked = false);
+    removePhoto();
+  }
+
+  function toggleAnon() {
+    const anon = document.getElementById('anon-check').checked;
+    document.getElementById('contact-fields').classList.toggle('hidden', anon);
+    document.getElementById('dropoff-fields').classList.toggle('visible', anon);
+  }
+
+  function previewPhoto(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { showToast('Photo must be under 5MB', true); input.value=''; return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      photoBase64 = e.target.result;
+      document.getElementById('photo-preview-img').src = photoBase64;
+      document.getElementById('photo-preview-img').style.display = 'block';
+      document.getElementById('photo-placeholder').style.display = 'none';
+      document.getElementById('remove-photo-btn').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removePhoto() {
+    photoBase64 = null;
+    document.getElementById('f-photo').value = '';
+    document.getElementById('photo-preview-img').style.display = 'none';
+    document.getElementById('photo-placeholder').style.display = 'block';
+    document.getElementById('remove-photo-btn').style.display = 'none';
+  }
+
+  async function submitItem() {
+    const name     = document.getElementById('f-name').value.trim();
+    const category = document.getElementById('f-category').value;
+    const desc     = document.getElementById('f-desc').value.trim();
+    const location = document.getElementById('f-location').value.trim();
+    const anon     = document.getElementById('anon-check').checked;
+    const email    = document.getElementById('f-email').value.trim();
+    const subName  = document.getElementById('f-submitter-name').value.trim();
+    const dropoff  = document.querySelector('input[name=dropoff]:checked')?.value || '';
+
+    if (!name) return showToast('Please enter an item name', true);
+    if (!category) return showToast('Please select a category', true);
+    if (!desc) return showToast('Please add a description', true);
+    if (!location) return showToast('Please enter the last seen location', true);
+    if (anon && !dropoff) return showToast('Please select a drop-off location', true);
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true; btn.textContent = 'Submitting…';
+
+    try {
+      const payload = {
+        item_name: name,
+        category,
+        description: desc,
+        last_seen_location: location,
+        is_anonymous: anon,
+        submitter_name: anon ? null : (subName || null),
+        email: anon ? null : (email || null),
+        dropoff_location: anon ? dropoff : null,
+        photo_url: photoBase64 || null,
+        approved: false,
+        found: false,
+        found_pending: false,
+      };
+
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/lost_and_found`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error('Submit failed');
+
+      document.getElementById('form-panel').style.display = 'none';
+      document.getElementById('success-panel').classList.add('visible');
+    } catch(e) {
+      showToast('Submission failed — please try again', true);
+      console.error(e);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Submit item';
+    }
+  }
+
+  // ── Utilities ────────────────────────────────────────────────
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function showToast(msg, isError=false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = isError ? 'error' : '';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  loadItems();
+</script>
+</body>
+</html>
