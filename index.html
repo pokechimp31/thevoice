@@ -522,8 +522,29 @@
       </div>`;
   }
 
+  // In-flight lock: prevents double-clicks submitting two votes before the
+  // first response returns.
+  let _voting = false;
+
   async function castVote(optionIndex) {
     if (!_pollId) return;
+    // Guard 1: already voted in a previous session (localStorage check)
+    if (storedRowId() !== null) {
+      await refreshResults(false);
+      return;
+    }
+    // Guard 2: vote request already in flight (double-click / double-tap)
+    if (_voting) return;
+    _voting = true;
+
+    // Disable all option buttons immediately so the user can't click again
+    // while the request is in-flight.
+    document.querySelectorAll('.poll-option-btn').forEach(btn => {
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'wait';
+    });
+
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/poll_votes`, {
         method: 'POST',
@@ -538,9 +559,13 @@
       if (res.ok) {
         const rows = await res.json();
         const rowId = rows?.[0]?.id;
-        if (rowId != null) localStorage.setItem(pollStorageKey(), String(rowId));
+        // Store a truthy sentinel even if the DB didn't return an id,
+        // so the localStorage guard fires on any future visit.
+        localStorage.setItem(pollStorageKey(), rowId != null ? String(rowId) : 'voted');
       }
     } catch(e) { console.error('Vote failed', e); }
+
+    _voting = false;
     await refreshResults(true);
   }
 
