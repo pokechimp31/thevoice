@@ -31,6 +31,61 @@
   a { color: var(--red); text-decoration: none; }
   a:hover { text-decoration: underline; }
 
+  /* ── Auth Gate ── */
+  #auth-gate {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-ui);
+  }
+  .gate-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 360px;
+    width: calc(100% - 48px);
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,.06);
+  }
+  .gate-icon { font-size: 48px; margin-bottom: 8px; }
+  .gate-title { font-family: var(--font-head); font-size: 26px; font-weight: 900; color: var(--red); margin-bottom: 4px; }
+  .gate-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+  .gate-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    outline: none;
+    font-family: var(--font-ui);
+    color: var(--text);
+    background: var(--bg);
+    transition: border-color .15s;
+  }
+  .gate-input:focus { border-color: var(--red); background: white; }
+  .gate-btn {
+    width: 100%;
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-ui);
+    transition: background .15s;
+  }
+  .gate-btn:hover { background: var(--red-dark); }
+  .gate-error { font-size: 12px; color: var(--red); margin-top: 12px; min-height: 16px; }
+
   /* ── Masthead ── */
   .masthead {
     background: var(--bg-card);
@@ -288,10 +343,8 @@
     .accordion-title { font-size: 15px; }
     .quick-links { gap: 6px; }
     .quick-link { font-size: 12px; padding: 4px 12px; }
-    /* Poll: anchor to bottom-left on mobile so it doesn't cover content */
     .poll-widget { right: auto; left: 12px; bottom: 16px; width: calc(100vw - 24px); max-width: 340px; }
     .poll-tab { right: auto; left: 12px; bottom: 16px; }
-    /* L&F FAB: hide on mobile when poll is also present to avoid overlap */
     .lf-fab { display: none; }
   }
   @media (max-width: 400px) {
@@ -302,6 +355,19 @@
 </style>
 </head>
 <body>
+
+<!-- ── Auth Gate ── -->
+<div id="auth-gate">
+  <div class="gate-card">
+    <div class="gate-icon">📰</div>
+    <div class="gate-title">The Voice</div>
+    <div class="gate-sub">The Pennington School</div>
+    <input class="gate-input" id="gate-input" type="password" placeholder="Enter password"
+      onkeydown="if(event.key==='Enter')checkPassword()">
+    <button class="gate-btn" onclick="checkPassword()">Enter</button>
+    <div class="gate-error" id="gate-error"></div>
+  </div>
+</div>
 
 <header class="masthead">
   <div class="masthead-inner">
@@ -340,7 +406,7 @@
   </footer>
 </main>
 
-<!-- ── Lost & Found FAB — emphasized with red background ── -->
+<!-- ── Lost & Found FAB ── -->
 <a class="lf-fab" href="lost-and-found.html" aria-label="Lost and Found">
   <span class="lf-fab-icon">🔍</span>
   <div class="lf-fab-text">
@@ -350,7 +416,6 @@
 </a>
 
 <!-- ── Poll Widget ── -->
-<!-- FIX: poll starts collapsed by default; .hidden class is present from the start -->
 <div class="poll-widget hidden" id="poll-widget">
   <div class="poll-header" onclick="togglePoll()">
     <div class="poll-header-left">
@@ -364,13 +429,45 @@
   </div>
 </div>
 
-<!-- Collapsed tab: shown by default since poll starts collapsed -->
 <button class="poll-tab" id="poll-tab" onclick="expandPoll()" aria-label="Open poll" style="display:flex">
   📊 Poll
 </button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
 <script>
+  // ── Password Gate ──────────────────────────────────────────────
+  (function() {
+    const PASSWORD    = 'YourPasswordHere'; // ← change this
+    const SESSION_KEY = 'voice_auth';
+    const EXPIRY_MS   = 365 * 24 * 60 * 60 * 1000; // 1 year
+
+    function isAuthed() {
+      try {
+        const val = localStorage.getItem(SESSION_KEY);
+        if (!val) return false;
+        const { expires } = JSON.parse(val);
+        return Date.now() < expires;
+      } catch { return false; }
+    }
+
+    if (isAuthed()) {
+      // Already authenticated — hide gate immediately
+      document.getElementById('auth-gate').style.display = 'none';
+    }
+
+    window.checkPassword = function() {
+      const input = document.getElementById('gate-input').value;
+      if (input === PASSWORD) {
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + EXPIRY_MS }));
+        document.getElementById('auth-gate').style.display = 'none';
+      } else {
+        document.getElementById('gate-error').textContent = 'Incorrect password. Try again.';
+        document.getElementById('gate-input').value = '';
+        document.getElementById('gate-input').focus();
+      }
+    };
+  })();
+
   // ── Auth redirect ─────────────────────────────────────────────
   const AUTH_TOKENS = ['recovery_token', 'invite_token', 'confirmation_token'];
   if (AUTH_TOKENS.some(t => window.location.hash.includes(t))) {
@@ -452,7 +549,6 @@
   let _pollId      = null;
   let _pollVersion = null;
   let _pollOptions = [];
-  // FIX: poll starts collapsed
   let _pollCollapsed = true;
 
   function pollStorageKey() {
@@ -522,18 +618,13 @@
       </div>`;
   }
 
-  // In-flight lock: prevents double-clicks submitting two votes before the
-  // first response returns.
   let _voting = false;
 
   async function castVote(optionIndex) {
     if (!_pollId) return;
-    // Guard: vote request already in flight (double-click / double-tap)
     if (_voting) return;
     _voting = true;
 
-    // Disable all option buttons immediately so the user can't click again
-    // while the request is in-flight.
     document.querySelectorAll('.poll-option-btn').forEach(btn => {
       btn.disabled = true;
       btn.style.opacity = '0.5';
@@ -544,8 +635,6 @@
       const existingRowId = storedRowId();
 
       if (existingRowId && existingRowId !== 'voted') {
-        // User is changing their vote — PATCH the existing row instead of
-        // inserting a new one, so the total vote count stays the same.
         const res = await fetch(
           `${SUPABASE_URL}/rest/v1/poll_votes?id=eq.${encodeURIComponent(existingRowId)}`,
           {
@@ -560,9 +649,7 @@
           }
         );
         if (!res.ok) console.error('Patch vote failed', res.status);
-        // rowId stays the same — no localStorage update needed
       } else {
-        // First-time vote — POST a new row.
         const res = await fetch(`${SUPABASE_URL}/rest/v1/poll_votes`, {
           method: 'POST',
           headers: {
@@ -576,8 +663,6 @@
         if (res.ok) {
           const rows = await res.json();
           const rowId = rows?.[0]?.id;
-          // Store the row id so future vote-changes can PATCH it.
-          // Fall back to sentinel string if DB didn't echo the id.
           localStorage.setItem(pollStorageKey(), rowId != null ? String(rowId) : 'voted');
         }
       }
@@ -590,8 +675,6 @@
   async function changeVote() {
     if (!_pollId) return;
     const body = document.getElementById('poll-body');
-    // Don't touch the DB or localStorage — the existing row stays in place.
-    // castVote will PATCH the row when the user picks a new option.
     try {
       const polls = await api(`poll?select=*&id=eq.${_pollId}`);
       const poll  = polls[0];
