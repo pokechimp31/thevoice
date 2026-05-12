@@ -33,98 +33,48 @@
 
   /* ── Auth Gate ── */
   #auth-gate {
-    position: fixed;
-    inset: 0;
-    background: var(--bg);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-ui);
+    position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+    display: flex; align-items: center; justify-content: center; font-family: var(--font-ui);
   }
   .gate-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 40px;
-    max-width: 360px;
-    width: calc(100% - 48px);
-    text-align: center;
-    box-shadow: 0 4px 24px rgba(0,0,0,.06);
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 40px; max-width: 360px; width: calc(100% - 48px);
+    text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,.06);
   }
   .gate-icon { font-size: 48px; margin-bottom: 8px; }
   .gate-title { font-family: var(--font-head); font-size: 26px; font-weight: 900; color: var(--red); margin-bottom: 4px; }
   .gate-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
   .gate-input {
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 14px;
-    margin-bottom: 12px;
-    box-sizing: border-box;
-    outline: none;
-    font-family: var(--font-ui);
-    color: var(--text);
-    background: var(--bg);
-    transition: border-color .15s;
+    width: 100%; border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; font-size: 14px; margin-bottom: 12px; box-sizing: border-box;
+    outline: none; font-family: var(--font-ui); color: var(--text);
+    background: var(--bg); transition: border-color .15s;
   }
   .gate-input:focus { border-color: var(--red); background: white; }
   .gate-btn {
-    width: 100%;
-    background: var(--red);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 11px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: var(--font-ui);
-    transition: background .15s;
+    width: 100%; background: var(--red); color: white; border: none; border-radius: 8px;
+    padding: 11px; font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: var(--font-ui); transition: background .15s;
   }
   .gate-btn:hover { background: var(--red-dark); }
   .gate-error { font-size: 12px; color: var(--red); margin-top: 12px; min-height: 16px; }
 
   /* ── Masthead ── */
   .masthead {
-    background: var(--bg-card);
-    border-bottom: 3px solid var(--red);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 12px rgba(44,44,44,.07);
+    background: var(--bg-card); border-bottom: 3px solid var(--red);
+    position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(44,44,44,.07);
   }
   .masthead-inner {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 16px 24px;
-    gap: 16px;
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+    max-width: 1100px; margin: 0 auto; padding: 16px 24px; gap: 16px;
   }
   .masthead-lunch { display: flex; flex-direction: column; gap: 2px; }
-  .masthead-side-label {
-    font-family: var(--font-ui);
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: var(--text-light);
-  }
+  .masthead-side-label { font-family: var(--font-ui); font-size: 9px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--text-light); }
   .masthead-lunch-text { font-family: var(--font-ui); font-size: 13px; color: var(--text-muted); line-height: 1.4; }
   .masthead-center { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
   .masthead-logo-title { display: flex; align-items: center; gap: 12px; }
   .masthead-logo { width: 48px; height: 48px; flex-shrink: 0; }
-  .masthead-title {
-    font-family: var(--font-head);
-    font-size: clamp(1.8rem, 5vw, 2.8rem);
-    font-weight: 900;
-    color: var(--red);
-    letter-spacing: -.5px;
-    line-height: 1;
-  }
+  .masthead-title { font-family: var(--font-head); font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 900; color: var(--red); letter-spacing: -.5px; line-height: 1; }
   .masthead-sub { font-family: var(--font-ui); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); }
   .masthead-meta { font-family: var(--font-ui); font-size: 11px; color: var(--text-light); }
   .masthead-weather { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
@@ -194,30 +144,14 @@
   .accordion-body-inner li { margin-bottom: 6px; }
   .accordion-body-inner h2, .accordion-body-inner h3 { margin-top: 16px; margin-bottom: 4px; font-family: var(--font-head); }
 
-  /* ── Lost & Found FAB — EMPHASIZED ── */
+  /* ── Lost & Found FAB ── */
   .lf-fab {
-    position: fixed;
-    bottom: 28px;
-    left: 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--red);
-    border: none;
-    border-radius: 16px;
-    padding: 14px 20px;
-    box-shadow: 0 4px 20px rgba(192,57,43,.40);
-    z-index: 90;
-    text-decoration: none;
-    transition: box-shadow .2s, transform .15s, background .15s;
-    max-width: 230px;
+    position: fixed; bottom: 28px; left: 24px; display: flex; align-items: center; gap: 12px;
+    background: var(--red); border: none; border-radius: 16px; padding: 14px 20px;
+    box-shadow: 0 4px 20px rgba(192,57,43,.40); z-index: 90; text-decoration: none;
+    transition: box-shadow .2s, transform .15s, background .15s; max-width: 230px;
   }
-  .lf-fab:hover {
-    box-shadow: 0 6px 28px rgba(192,57,43,.55);
-    transform: translateY(-3px);
-    background: var(--red-dark);
-    text-decoration: none;
-  }
+  .lf-fab:hover { box-shadow: 0 6px 28px rgba(192,57,43,.55); transform: translateY(-3px); background: var(--red-dark); text-decoration: none; }
   .lf-fab-icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
   .lf-fab-text { display: flex; flex-direction: column; gap: 1px; }
   .lf-fab-label { font-family: var(--font-ui); font-size: 14px; font-weight: 700; color: #ffffff; line-height: 1.2; }
@@ -225,29 +159,13 @@
 
   /* ── Poll widget ── */
   .poll-widget {
-    position: fixed;
-    bottom: 28px;
-    right: 24px;
-    width: 260px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    box-shadow: 0 4px 24px rgba(44,44,44,.12);
-    z-index: 90;
-    overflow: hidden;
+    position: fixed; bottom: 28px; right: 24px; width: 260px;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(44,44,44,.12); z-index: 90; overflow: hidden;
     transition: transform .25s ease, opacity .25s ease;
   }
   .poll-widget.hidden { transform: translateY(calc(100% + 32px)); opacity: 0; pointer-events: none; }
-  .poll-header {
-    background: var(--red);
-    color: white;
-    padding: 10px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    user-select: none;
-  }
+  .poll-header { background: var(--red); color: white; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
   .poll-header-left { display: flex; align-items: center; gap: 7px; }
   .poll-header-label { font-family: var(--font-ui); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
   .poll-toggle-btn { background: rgba(255,255,255,.2); border: none; color: white; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; }
@@ -255,22 +173,8 @@
   .poll-body { padding: 14px; }
   .poll-question { font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 12px; }
   .poll-options { display: flex; flex-direction: column; gap: 7px; }
-  .poll-option-btn {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-family: var(--font-ui);
-    font-size: 13px;
-    color: var(--text);
-    cursor: pointer;
-    text-align: left;
-    transition: background .15s, border-color .15s;
-  }
+  .poll-option-btn { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-family: var(--font-ui); font-size: 13px; color: var(--text); cursor: pointer; text-align: left; transition: background .15s, border-color .15s; }
   .poll-option-btn:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
-
-  /* Results bars */
   .poll-results { display: flex; flex-direction: column; gap: 8px; }
   .poll-result-item { display: flex; flex-direction: column; gap: 3px; }
   .poll-result-label { display: flex; justify-content: space-between; font-family: var(--font-ui); font-size: 12px; color: var(--text-muted); }
@@ -279,44 +183,9 @@
   .poll-bar-fill { height: 100%; background: var(--red); border-radius: 3px; transition: width .5s ease; }
   .poll-voted-label { font-family: var(--font-ui); font-size: 11px; color: var(--text-light); text-align: center; margin-top: 10px; }
   .poll-total { font-family: var(--font-ui); font-size: 11px; color: var(--text-light); text-align: center; margin-top: 6px; }
-
-  /* Change answer button */
-  .poll-change-btn {
-    width: 100%;
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-family: var(--font-ui);
-    font-size: 11px;
-    color: var(--text-muted);
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background .15s, border-color .15s, color .15s;
-  }
+  .poll-change-btn { width: 100%; background: none; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-family: var(--font-ui); font-size: 11px; color: var(--text-muted); cursor: pointer; margin-top: 10px; transition: background .15s, border-color .15s, color .15s; }
   .poll-change-btn:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
-
-  /* Collapsed tab */
-  .poll-tab {
-    position: fixed;
-    bottom: 28px;
-    right: 24px;
-    background: var(--red);
-    color: white;
-    border: none;
-    border-radius: 24px;
-    padding: 10px 18px;
-    font-family: var(--font-ui);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(192,57,43,.35);
-    z-index: 90;
-    display: none;
-    align-items: center;
-    gap: 7px;
-    transition: opacity .2s;
-  }
+  .poll-tab { position: fixed; bottom: 28px; right: 24px; background: var(--red); color: white; border: none; border-radius: 24px; padding: 10px 18px; font-family: var(--font-ui); font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 16px rgba(192,57,43,.35); z-index: 90; display: none; align-items: center; gap: 7px; transition: opacity .2s; }
   .poll-tab:hover { opacity: .88; }
 
   /* ── Misc ── */
@@ -437,47 +306,44 @@
 <script>
   // ── Password Gate ──────────────────────────────────────────────
   (function() {
-  // This is the SHA-256 hash of 'Nice try bro'
-  const HASHED_PASSWORD = '74a88f572993888362678257007f30062776c5b964344d137f766329c3214731';
-  const SESSION_KEY = 'voice_auth';
-  const EXPIRY_MS   = 365 * 24 * 60 * 60 * 1000;
+    // SHA-256 hash of the password — safe to store in public source code
+    const HASHED_PASSWORD = 'b1f13875e69df0fc0f40cf2c41b8206836417bb3dff776af555cecf100a4e968';
+    const SESSION_KEY = 'voice_auth';
+    const EXPIRY_MS   = 365 * 24 * 60 * 60 * 1000;
 
-  // Helper function to turn a string into a SHA-256 hex string
-  async function sha256(message) {
-    const msgUint8 = new TextEncoder().encode(message);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  function isAuthed() {
-    try {
-      const val = localStorage.getItem(SESSION_KEY);
-      if (!val) return false;
-      const { expires } = JSON.parse(val);
-      return Date.now() < expires;
-    } catch { return false; }
-  }
-
-  if (isAuthed()) {
-    document.getElementById('auth-gate').style.display = 'none';
-  }
-
-  // Updated to be an async function
-  window.checkPassword = async function() {
-    const input = document.getElementById('gate-input').value;
-    const inputHash = await sha256(input);
-
-    if (inputHash === HASHED_PASSWORD) {
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + EXPIRY_MS }));
-      document.getElementById('auth-gate').style.display = 'none';
-    } else {
-      document.getElementById('gate-error').textContent = 'Incorrect password. Try again.';
-      document.getElementById('gate-input').value = '';
-      document.getElementById('gate-input').focus();
+    async function sha256(message) {
+      const msgUint8 = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
-  };
-})();
+
+    function isAuthed() {
+      try {
+        const val = localStorage.getItem(SESSION_KEY);
+        if (!val) return false;
+        const { expires } = JSON.parse(val);
+        return Date.now() < expires;
+      } catch { return false; }
+    }
+
+    if (isAuthed()) {
+      document.getElementById('auth-gate').style.display = 'none';
+    }
+
+    window.checkPassword = async function() {
+      const input = document.getElementById('gate-input').value;
+      const inputHash = await sha256(input);
+      if (inputHash === HASHED_PASSWORD) {
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + EXPIRY_MS }));
+        document.getElementById('auth-gate').style.display = 'none';
+      } else {
+        document.getElementById('gate-error').textContent = 'Incorrect password. Try again.';
+        document.getElementById('gate-input').value = '';
+        document.getElementById('gate-input').focus();
+      }
+    };
+  })();
 
   // ── Auth redirect ─────────────────────────────────────────────
   const AUTH_TOKENS = ['recovery_token', 'invite_token', 'confirmation_token'];
@@ -562,12 +428,8 @@
   let _pollOptions = [];
   let _pollCollapsed = true;
 
-  function pollStorageKey() {
-    return `poll_voted_${_pollId}_v${_pollVersion}`;
-  }
-  function storedRowId() {
-    return localStorage.getItem(pollStorageKey());
-  }
+  function pollStorageKey() { return `poll_voted_${_pollId}_v${_pollVersion}`; }
+  function storedRowId()    { return localStorage.getItem(pollStorageKey()); }
 
   function togglePoll() {
     _pollCollapsed = !_pollCollapsed;
@@ -575,13 +437,9 @@
     const tab    = document.getElementById('poll-tab');
     const chev   = document.getElementById('poll-chevron');
     if (_pollCollapsed) {
-      widget.classList.add('hidden');
-      tab.style.display = 'flex';
-      chev.textContent = '▲';
+      widget.classList.add('hidden'); tab.style.display = 'flex'; chev.textContent = '▲';
     } else {
-      widget.classList.remove('hidden');
-      tab.style.display = 'none';
-      chev.textContent = '▼';
+      widget.classList.remove('hidden'); tab.style.display = 'none'; chev.textContent = '▼';
     }
   }
   function expandPoll() {
@@ -597,16 +455,17 @@
     try {
       const polls = await api('poll?select=*&enabled=eq.true&order=id.desc&limit=1');
       const poll  = polls[0];
-      if (!poll || !poll.enabled) { widget.style.display = 'none'; document.getElementById('poll-tab').style.display = 'none'; return; }
-
+      if (!poll || !poll.enabled) {
+        widget.style.display = 'none';
+        document.getElementById('poll-tab').style.display = 'none';
+        return;
+      }
       _pollId      = poll.id;
       _pollVersion = poll.vote_version ?? 0;
       _pollOptions = poll.options || [];
-
       const votes  = await api(`poll_votes?select=option_index&poll_id=eq.${poll.id}`);
       const counts = _pollOptions.map((_, i) => votes.filter(v => v.option_index === i).length);
       const total  = counts.reduce((a, b) => a + b, 0);
-
       const hasVoted = storedRowId();
       if (hasVoted !== null) {
         renderResults(body, _pollOptions, counts, total, false);
@@ -632,43 +491,25 @@
   let _voting = false;
 
   async function castVote(optionIndex) {
-    if (!_pollId) return;
-    if (_voting) return;
+    if (!_pollId || _voting) return;
     _voting = true;
-
     document.querySelectorAll('.poll-option-btn').forEach(btn => {
-      btn.disabled = true;
-      btn.style.opacity = '0.5';
-      btn.style.cursor = 'wait';
+      btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'wait';
     });
-
     try {
       const existingRowId = storedRowId();
-
       if (existingRowId && existingRowId !== 'voted') {
+        // Vote change — PATCH existing row, count stays the same
         const res = await fetch(
           `${SUPABASE_URL}/rest/v1/poll_votes?id=eq.${encodeURIComponent(existingRowId)}`,
-          {
-            method: 'PATCH',
-            headers: {
-              apikey: SUPABASE_ANON_KEY,
-              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-              'Content-Type': 'application/json',
-              Prefer: 'return=minimal',
-            },
-            body: JSON.stringify({ option_index: optionIndex }),
-          }
+          { method: 'PATCH', headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify({ option_index: optionIndex }) }
         );
         if (!res.ok) console.error('Patch vote failed', res.status);
       } else {
+        // First-time vote — POST new row
         const res = await fetch(`${SUPABASE_URL}/rest/v1/poll_votes`, {
           method: 'POST',
-          headers: {
-            apikey: SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-            'Content-Type': 'application/json',
-            Prefer: 'return=representation',
-          },
+          headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
           body: JSON.stringify({ poll_id: _pollId, option_index: optionIndex }),
         });
         if (res.ok) {
@@ -678,7 +519,6 @@
         }
       }
     } catch(e) { console.error('Vote failed', e); }
-
     _voting = false;
     await refreshResults(true);
   }
@@ -688,19 +528,15 @@
     const body = document.getElementById('poll-body');
     try {
       const polls = await api(`poll?select=*&id=eq.${_pollId}`);
-      const poll  = polls[0];
-      renderVoting(body, poll.question, _pollOptions);
-    } catch(e) {
-      renderVoting(body, '', _pollOptions);
-    }
+      renderVoting(body, polls[0].question, _pollOptions);
+    } catch(e) { renderVoting(body, '', _pollOptions); }
   }
 
   async function refreshResults(justVoted) {
     const body  = document.getElementById('poll-body');
     const polls = await api(`poll?select=*&id=eq.${_pollId}`);
-    const poll  = polls[0];
     const votes = await api(`poll_votes?select=option_index&poll_id=eq.${_pollId}`);
-    const options = poll.options || [];
+    const options = polls[0].options || [];
     const counts  = options.map((_, i) => votes.filter(v => v.option_index === i).length);
     const total   = counts.reduce((a, b) => a + b, 0);
     renderResults(body, options, counts, total, justVoted);
@@ -710,13 +546,8 @@
     const bars = options.map((opt, i) => {
       const pct = total > 0 ? Math.round((counts[i] / total) * 100) : 0;
       return `<div class="poll-result-item">
-        <div class="poll-result-label">
-          <span>${esc(opt)}</span>
-          <span class="poll-result-pct">${pct}%</span>
-        </div>
-        <div class="poll-bar-track">
-          <div class="poll-bar-fill" style="width:${pct}%"></div>
-        </div>
+        <div class="poll-result-label"><span>${esc(opt)}</span><span class="poll-result-pct">${pct}%</span></div>
+        <div class="poll-bar-track"><div class="poll-bar-fill" style="width:${pct}%"></div></div>
       </div>`;
     }).join('');
     body.innerHTML = `
