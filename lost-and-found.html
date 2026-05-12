@@ -374,7 +374,7 @@
             <input type="file" accept="image/*" id="f-photo" onchange="previewPhoto(this)">
             <div id="photo-placeholder">
               <div class="photo-upload-icon">📷</div>
-              <div class="photo-upload-text"><strong>Click to upload</strong> or drag &amp; drop<br><span style="font-size:11px">JPG, PNG, GIF up to 5MB</span></div>
+              <div class="photo-upload-text"><strong>Click to upload</strong> or drag &amp; drop<br><span style="font-size:11px">JPG, PNG up to 5MB · compressed automatically</span></div>
             </div>
             <img class="photo-preview" id="photo-preview-img" alt="Preview">
           </div>
@@ -454,6 +454,7 @@
 
   let allItems = [];
   let currentFilter = 'all';
+  // FIX: store compressed base64 instead of raw FileReader output
   let photoBase64 = null;
 
   async function api(path, opts={}) {
@@ -590,19 +591,55 @@
     document.getElementById('dropoff-fields').classList.toggle('visible', anon);
   }
 
-  function previewPhoto(input) {
+  // ── FIX: compress image via canvas before storing ────────────
+  // Raw FileReader base64 can be 2–6 MB; Supabase text columns have a ~1 MB
+  // practical limit per row, causing the entire INSERT to fail silently.
+  // We resize to max 800 px and re-encode at 0.75 quality → typically < 100 KB.
+  function compressImage(file, maxPx, quality) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('File read failed'));
+      reader.onload = e => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('Image decode failed'));
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxPx || height > maxPx) {
+            if (width >= height) { height = Math.round(height * maxPx / width); width = maxPx; }
+            else                 { width  = Math.round(width  * maxPx / height); height = maxPx; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function previewPhoto(input) {
     const file = input.files[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { showToast('Photo must be under 5MB', true); input.value=''; return; }
-    const reader = new FileReader();
-    reader.onload = e => {
-      photoBase64 = e.target.result;
+
+    // Show a temporary loading state while compressing
+    document.getElementById('photo-placeholder').innerHTML =
+      '<div class="photo-upload-icon">⏳</div><div class="photo-upload-text">Compressing…</div>';
+
+    try {
+      const compressed = await compressImage(file, 800, 0.75);
+      photoBase64 = compressed;
       document.getElementById('photo-preview-img').src = photoBase64;
       document.getElementById('photo-preview-img').style.display = 'block';
       document.getElementById('photo-placeholder').style.display = 'none';
       document.getElementById('remove-photo-btn').style.display = 'block';
-    };
-    reader.readAsDataURL(file);
+    } catch(err) {
+      console.error('Compression failed', err);
+      showToast('Could not process photo — try a different image', true);
+      removePhoto();
+    }
   }
 
   function removePhoto() {
@@ -610,6 +647,10 @@
     document.getElementById('f-photo').value = '';
     document.getElementById('photo-preview-img').style.display = 'none';
     document.getElementById('photo-placeholder').style.display = 'block';
+    document.getElementById('photo-placeholder').innerHTML =
+      '<div class="photo-upload-icon">📷</div>' +
+      '<div class="photo-upload-text"><strong>Click to upload</strong> or drag &amp; drop<br>' +
+      '<span style="font-size:11px">JPG, PNG up to 5MB · compressed automatically</span></div>';
     document.getElementById('remove-photo-btn').style.display = 'none';
   }
 
@@ -623,9 +664,9 @@
     const subName  = document.getElementById('f-submitter-name').value.trim();
     const dropoff  = document.querySelector('input[name=dropoff]:checked')?.value || '';
 
-    if (!name) return showToast('Please enter an item name', true);
+    if (!name)     return showToast('Please enter an item name', true);
     if (!category) return showToast('Please select a category', true);
-    if (!desc) return showToast('Please add a description', true);
+    if (!desc)     return showToast('Please add a description', true);
     if (!location) return showToast('Please enter the last seen location', true);
     if (anon && !dropoff) return showToast('Please select a drop-off location', true);
 
@@ -634,38 +675,46 @@
 
     try {
       const payload = {
-        item_name: name,
+        item_name:          name,
         category,
-        description: desc,
+        description:        desc,
         last_seen_location: location,
-        is_anonymous: anon,
-        submitter_name: anon ? null : (subName || null),
-        email: anon ? null : (email || null),
-        dropoff_location: anon ? dropoff : null,
-        photo_url: photoBase64 || null,
-        approved: false,
-        found: false,
-        found_pending: false,
+        is_anonymous:       anon,
+        submitter_name:     anon ? null : (subName  || null),
+        email:              anon ? null : (email    || null),
+        dropoff_location:   anon ? dropoff : null,
+        // FIX: only include photo_url when a compressed image exists;
+        // raw base64 from FileReader is too large for a Supabase text column
+        // and will cause the entire row insert to fail.
+        photo_url:          photoBase64 || null,
+        approved:           false,
+        found:              false,
+        found_pending:      false,
       };
 
       const res = await fetch(`${SUPABASE_URL}/rest/v1/lost_and_found`, {
         method: 'POST',
         headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-          Prefer: 'return=minimal',
+          apikey:             SUPABASE_ANON_KEY,
+          Authorization:      `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type':     'application/json',
+          Prefer:             'return=minimal',
         },
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error('Submit failed');
+      if (!res.ok) {
+        // Surface the Supabase error message to help with debugging
+        let errMsg = `HTTP ${res.status}`;
+        try { const body = await res.json(); errMsg = body.message || body.error || errMsg; } catch {}
+        throw new Error(errMsg);
+      }
 
       document.getElementById('form-panel').style.display = 'none';
       document.getElementById('success-panel').classList.add('visible');
     } catch(e) {
-      showToast('Submission failed — please try again', true);
-      console.error(e);
+      showToast(`Submission failed — ${e.message}`, true);
+      console.error('Submit error:', e);
     } finally {
       btn.disabled = false; btn.textContent = 'Submit item';
     }
